@@ -1,5 +1,6 @@
 import 'package:admin_ocean_learn2/pages/dashboard/dashboard_controller.dart';
 import 'package:admin_ocean_learn2/pages/home/home_page.dart';
+import 'package:admin_ocean_learn2/pages/schedule/schedule_page.dart';
 import 'package:admin_ocean_learn2/utils/color_palette.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -12,7 +13,7 @@ class Dashboard extends StatelessWidget {
   Widget build(BuildContext context) {
     final dashboardController = Get.put(DashboardController());
     final List<Widget> menus = [
-      HomePage(),
+      HomePage(), SchedulePage(),
     ];
 
     return Obx(() {
@@ -62,7 +63,6 @@ class Dashboard extends StatelessWidget {
                         radius: 25,
                         backgroundImage: NetworkImage(
                             'https://i.pinimg.com/736x/9f/be/f5/9fbef5a4ae96b3498fad7873a8ff9d09.jpg'),
-                        child: Icon(Icons.person, color: Colors.white),
                       ),
                       const SizedBox(width: 15),
                       Column(
