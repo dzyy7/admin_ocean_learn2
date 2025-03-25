@@ -1,4 +1,5 @@
 import 'package:admin_ocean_learn2/utils/color_palette.dart';
+import 'package:admin_ocean_learn2/widget/my_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -19,13 +20,8 @@ class LoginPage extends StatelessWidget {
             padding: const EdgeInsets.only(top: 50),
             child: Column(
               children: [
-                Text(
-                  'Welcome Back!',
-                  style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 26,
-                    color: textColor,
-                  ),
+                MyText(
+                  text: 'Welcome Back!',
                 ),
                 const SizedBox(height: 10),
                 SvgPicture.asset(
@@ -54,7 +50,6 @@ class LoginPage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      // Username field
                       TextField(
                         decoration: InputDecoration(
                           hintText: 'username',
@@ -67,15 +62,13 @@ class LoginPage extends StatelessWidget {
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(
-                                color: primaryColor,
-                                width: 1), // Stroke biru saat tidak fokus
+                            borderSide:
+                                const BorderSide(color: primaryColor, width: 1),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(
-                                color: primaryColor,
-                                width: 1), // Stroke biru lebih tebal saat fokus
+                            borderSide:
+                                const BorderSide(color: primaryColor, width: 1),
                           ),
                           filled: true,
                           fillColor: Colors.grey[100],
@@ -86,8 +79,6 @@ class LoginPage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 16),
-            
-                      // Password field
                       TextField(
                         obscureText: true,
                         decoration: InputDecoration(
@@ -97,20 +88,17 @@ class LoginPage extends StatelessWidget {
                           suffixIcon: const Icon(Icons.lock_outline),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide:
-                                BorderSide.none, // Tidak ada border default
+                            borderSide: BorderSide.none,
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(
-                                color: primaryColor,
-                                width: 1), // Stroke biru saat tidak fokus
+                            borderSide:
+                                const BorderSide(color: primaryColor, width: 1),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(
-                                color: primaryColor,
-                                width: 1), // Stroke biru lebih tebal saat fokus
+                            borderSide:
+                                const BorderSide(color: primaryColor, width: 1),
                           ),
                           filled: true,
                           fillColor: Colors.grey[100],
@@ -120,10 +108,7 @@ class LoginPage extends StatelessWidget {
                           ),
                         ),
                       ),
-            
                       const SizedBox(height: 16),
-            
-                      // Remember Me & Forgot Password
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -163,10 +148,7 @@ class LoginPage extends StatelessWidget {
                           ),
                         ],
                       ),
-            
                       const SizedBox(height: 10),
-            
-                      // Sign in with divider
                       Row(
                         children: [
                           const Expanded(child: Divider(thickness: 1)),
@@ -183,10 +165,7 @@ class LoginPage extends StatelessWidget {
                           const Expanded(child: Divider(thickness: 1)),
                         ],
                       ),
-            
                       const SizedBox(height: 10),
-            
-                      // Social login buttons
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -218,10 +197,7 @@ class LoginPage extends StatelessWidget {
                           const SizedBox(width: 10),
                         ],
                       ),
-            
                       const SizedBox(height: 10),
-            
-                      // Sign In Button
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
