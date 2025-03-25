@@ -1,6 +1,7 @@
 import 'package:admin_ocean_learn2/pages/dashboard/dashboard_controller.dart';
 import 'package:admin_ocean_learn2/pages/home/home_page.dart';
 import 'package:admin_ocean_learn2/pages/payment/payment_page.dart';
+import 'package:admin_ocean_learn2/pages/profile/profile_page.dart';
 import 'package:admin_ocean_learn2/pages/schedule/schedule_page.dart';
 import 'package:admin_ocean_learn2/utils/color_palette.dart';
 import 'package:admin_ocean_learn2/widget/payment_component/payment_card.dart';
@@ -15,7 +16,7 @@ class Dashboard extends StatelessWidget {
   Widget build(BuildContext context) {
     final dashboardController = Get.put(DashboardController());
     final List<Widget> menus = [
-      HomePage(), SchedulePage(), PaymentPage(),
+      HomePage(), SchedulePage(), PaymentPage(),ProfilePage()
     ];
 
     return Obx(() {
