@@ -52,7 +52,7 @@ class PaymentPage extends StatelessWidget {
                       indicatorSize: TabBarIndicatorSize.tab,
                       tabs: const [
                         Tab(text: 'Payment History'),
-                        Tab(text: 'COD Confirmation'),
+                        Tab(text: 'Cash Confirmation'),
                       ],
                     ),
                   ),
@@ -93,7 +93,7 @@ class PaymentPage extends StatelessWidget {
             children: [
               Expanded(
                 child: PaymentCard(
-                  title: 'Pending COD',
+                  title: 'Pending Cash',
                   value: '24',
                   icon: Icons.pending_actions,
                   color: Colors.deepOrange,
