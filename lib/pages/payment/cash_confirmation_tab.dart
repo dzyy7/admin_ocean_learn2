@@ -1,6 +1,6 @@
 import 'package:admin_ocean_learn2/utils/color_palette.dart';
 import 'package:flutter/material.dart';
-import '../../model/cod_confirmation_model.dart';
+import '../../model/cash_confirmation_model.dart';
 
 class CashConfirmationTab extends StatelessWidget {
   const CashConfirmationTab({super.key});
