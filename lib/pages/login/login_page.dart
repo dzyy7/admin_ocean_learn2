@@ -20,7 +20,7 @@ class LoginPage extends StatelessWidget {
             padding: const EdgeInsets.only(top: 50),
             child: Column(
               children: [
-                MyText(text: 'Welcome Back!'),
+                MyText(text: 'Welcome Back!', fontsize: 26, fontfamily: 'poppins', color: textColor, textAlign: TextAlign.center),
                 const SizedBox(height: 10),
                 SvgPicture.asset(
                   'assets/svg/login_vector.svg',
