@@ -18,23 +18,66 @@ class LoginController extends GetxController {
 
     isLoading.value = true;
 
-    final result = await LoginService.login(
-      emailController.text.trim(), 
-      passwordController.text.trim()
-    );
+    try {
+      final result = await LoginService.login(
+        emailController.text.trim(), 
+        passwordController.text.trim()
+      );
 
-    isLoading.value = false;
+      isLoading.value = false;
 
-    if (result['success']) {
-      if (rememberMe.value) {
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('token', result['data']['token']);
-        await prefs.setString('email', emailController.text.trim());
+      if (result['success'] == true) {
+        // Safely extract token
+        final token = result['data']['token'] ?? '';
+        final userInfo = result['data']['user'];
+        
+        if (token.isNotEmpty) {
+          if (rememberMe.value) {
+            final prefs = await SharedPreferences.getInstance();
+            await prefs.setString('token', token);
+            await prefs.setString('email', userInfo['email']);
+            await prefs.setString('name', userInfo['name']);
+            await prefs.setString('role', userInfo['role']);
+          }
+
+          Get.offNamed('/dashboard');
+        } else {
+          _showErrorDialog('Invalid authentication token');
+        }
+      } else {
+        // Use a safe fallback message
+        _showErrorDialog(result['message'] ?? 'Login failed');
       }
+    } catch (e) {
+      isLoading.value = false;
+      _showErrorDialog('An unexpected error occurred');
+    }
+  }
 
-      Get.offNamed('/dashboard');
-    } else {
-      _showErrorDialog(result['message']);
+  void logout() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+      if (token != null && token.isNotEmpty) {
+        final result = await LoginService.logout(token);
+        
+        // Clear stored credentials regardless of logout success
+        await prefs.remove('token');
+        await prefs.remove('email');
+        await prefs.remove('name');
+        await prefs.remove('role');
+
+        if (result['success'] == true) {
+          Get.offAllNamed('/');
+        } else {
+          _showErrorDialog(result['message'] ?? 'Logout failed');
+        }
+      } else {
+        Get.offAllNamed('/');
+      }
+    } catch (e) {
+      _showErrorDialog('An error occurred during logout');
     }
   }
 

@@ -1,27 +1,30 @@
 import 'package:admin_ocean_learn2/pages/dashboard/dashboard.dart';
-import 'package:admin_ocean_learn2/pages/home/home_page.dart';
+import 'package:admin_ocean_learn2/pages/dashboard/dashboard_controller.dart';
 import 'package:admin_ocean_learn2/pages/intro/intro.dart';
+import 'package:admin_ocean_learn2/pages/login/login_controller.dart';
 import 'package:admin_ocean_learn2/pages/login/login_page.dart';
+import 'package:admin_ocean_learn2/pages/splashscreen/splashscreen.dart';
+import 'package:admin_ocean_learn2/routes/my_pages.dart';
+import 'package:admin_ocean_learn2/routes/my_routes.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get_navigation/src/root/get_material_app.dart';
-import 'package:get/get_navigation/src/routes/get_route.dart';
+import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      home: IntroPage(),
-      getPages: [
-        GetPage(name: '/dashboard', page: () => const Dashboard()),
-        GetPage(name: '/home', page: () => const HomePage()),
-      ],
+      title: 'Ocean Learn',
+      initialRoute: MyAppRoutes.splashScreen,
+      getPages: MyAppPage.pages,
     );
   }
 }
