@@ -19,13 +19,11 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   void initState() {
     super.initState();
     
-    // Initialize animation controller
     _animationController = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
     );
 
-    // Create scale animation
     _scaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
       CurvedAnimation(
         parent: _animationController,
@@ -33,10 +31,8 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
       ),
     );
 
-    // Start the animation
     _animationController.forward();
 
-    // Check authentication after animation completes
     _animationController.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         _checkAuthentication();
@@ -48,14 +44,11 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
 
-    // Delay to ensure splash screen is visible
     await Future.delayed(const Duration(seconds: 1));
 
     if (token != null && token.isNotEmpty) {
-      // If token exists, go directly to dashboard
       Get.offNamed(MyAppRoutes.dashboard);
     } else {
-      // If no token, go to intro page
       Get.offNamed(MyAppRoutes.introPage);
     }
   }
