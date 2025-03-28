@@ -1,29 +1,30 @@
-import 'package:admin_ocean_learn2/utils/color_palette.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class MyText extends StatelessWidget {
   final String text;
-  final Color? color;
-  final double? fontSize;
-  final FontWeight? fontWeight;
+  final double fontsize;
+  final String fontfamily;
+  final Color color;
+  final TextAlign textAlign;
 
   const MyText({
     Key? key,
     required this.text,
-    this.color,
-    this.fontSize,
-    this.fontWeight,
+    required this.fontsize,
+    required this.fontfamily,
+    required this.color,
+    required this.textAlign,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Text(
+      textAlign: textAlign,
       text,
-      style: GoogleFonts.poppins(
-        fontWeight: fontWeight ?? FontWeight.bold,
-        fontSize: fontSize ?? 26,
-        color: color ??textColor, 
+      style: TextStyle(
+        fontFamily: fontfamily,
+        fontSize: fontsize,
+        color: color,
       ),
     );
   }

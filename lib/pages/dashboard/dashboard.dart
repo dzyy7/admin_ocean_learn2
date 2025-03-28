@@ -1,5 +1,6 @@
 import 'package:admin_ocean_learn2/pages/dashboard/dashboard_controller.dart';
 import 'package:admin_ocean_learn2/pages/home/home_page.dart';
+import 'package:admin_ocean_learn2/pages/login/login_controller.dart';
 import 'package:admin_ocean_learn2/pages/payment/payment_page.dart';
 import 'package:admin_ocean_learn2/pages/profile/profile_page.dart';
 import 'package:admin_ocean_learn2/pages/schedule/schedule_page.dart';
@@ -14,6 +15,7 @@ class Dashboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loginController = Get.lazyPut(() => LoginController());
     final dashboardController = Get.put(DashboardController());
     final List<Widget> menus = [
       HomePage(), SchedulePage(), PaymentPage(),ProfilePage()
@@ -158,7 +160,7 @@ class Dashboard extends StatelessWidget {
                         style: TextStyle(color: Colors.blue),
                       ),
                       onPressed: () {
-                        Navigator.pop(context);
+                        Get.find<LoginController>().logout();
                       },
                     ),
                   ),
