@@ -3,94 +3,77 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+
 class LoginController extends GetxController {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  
   RxBool isLoading = false.obs;
   RxBool rememberMe = false.obs;
 
   void login() async {
-    if (emailController.text.trim().isEmpty || passwordController.text.trim().isEmpty) {
+    final email = emailController.text.trim();
+    final password = passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
       _showErrorDialog('Please enter email and password');
       return;
     }
 
     isLoading.value = true;
 
-    try {
-      final result = await LoginService.login(
-        emailController.text.trim(), 
-        passwordController.text.trim()
-      );
+    final response = await LoginService.login(email, password);
+    isLoading.value = false;
 
-      isLoading.value = false;
+    if (response.status && response.accountInfo != null) {
+      final token = response.accountInfo!.tokens.isNotEmpty
+          ? response.accountInfo!.tokens[0].token
+          : '';
 
-      if (result['success'] == true) {
-        // Safely extract token
-        final token = result['data']['token'] ?? '';
-        final userInfo = result['data']['user'];
-        
-        if (token.isNotEmpty) {
-          if (rememberMe.value) {
-            final prefs = await SharedPreferences.getInstance();
-            await prefs.setString('token', token);
-            await prefs.setString('email', userInfo['email']);
-            await prefs.setString('name', userInfo['name']);
-            await prefs.setString('role', userInfo['role']);
-          }
-
-          Get.offNamed('/dashboard');
-        } else {
-          _showErrorDialog('Invalid authentication token');
+      if (token.isNotEmpty) {
+        if (rememberMe.value) {
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('token', token);
+          await prefs.setString('email', response.accountInfo!.email);
+          await prefs.setString('name', response.accountInfo!.name);
+          await prefs.setString('role', response.accountInfo!.role);
         }
+
+        Get.offNamed('/dashboard');
       } else {
-        // Use a safe fallback message
-        _showErrorDialog(result['message'] ?? 'Login failed');
+        _showErrorDialog('Token not found in response');
       }
-    } catch (e) {
-      isLoading.value = false;
-      _showErrorDialog('An unexpected error occurred');
+    } else {
+      _showErrorDialog(response.message);
     }
   }
 
   void logout() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('token');
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token') ?? '';
 
-      if (token != null && token.isNotEmpty) {
-        final result = await LoginService.logout(token);
-        
-        // Clear stored credentials regardless of logout success
-        await prefs.remove('token');
-        await prefs.remove('email');
-        await prefs.remove('name');
-        await prefs.remove('role');
-
-        if (result['success'] == true) {
-          Get.offAllNamed('/');
-        } else {
-          _showErrorDialog(result['message'] ?? 'Logout failed');
-        }
-      } else {
+    if (token.isNotEmpty) {
+      final result = await LoginService.logout(token);
+      await prefs.clear();
+      if (result['success']) {
         Get.offAllNamed('/');
+      } else {
+        _showErrorDialog(result['message']);
       }
-    } catch (e) {
-      _showErrorDialog('An error occurred during logout');
+    } else {
+      Get.offAllNamed('/');
     }
   }
 
   void _showErrorDialog(String message) {
     Get.dialog(
       AlertDialog(
-        title: Text('Error'),
+        title: const Text('Error'),
         content: Text(message),
         actions: [
           TextButton(
-            child: Text('Okay'),
             onPressed: () => Get.back(),
-          )
+            child: const Text('OK'),
+          ),
         ],
       ),
     );

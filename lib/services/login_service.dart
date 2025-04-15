@@ -1,53 +1,28 @@
+import 'package:admin_ocean_learn2/model/login_service_model.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
 
 class LoginService {
-  static Future<Map<String, dynamic>> login(String email, String password) async {
+  static Future<LoginResponseModel> login(String email, String password) async {
     try {
       final response = await http.post(
         Uri.parse('https://ocean-learn-api.rplrus.com/api/v1/user/auth'),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode({
-          'email': email,
-          'password': password,
-        }),
-      ).timeout(
-        const Duration(seconds: 10),
-        onTimeout: () => throw TimeoutException('Connection timeout'),
-      );
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'email': email, 'password': password}),
+      ).timeout(const Duration(seconds: 10));
 
-      final responseBody = jsonDecode(response.body);
-
-      if (responseBody['status'] == true) {
-        // Extract token from the nested structure
-        final token = responseBody['data']['account_info']['token'][0]['token'];
-        
-        return {
-          'success': true,
-          'data': {
-            'token': token,
-            'user': responseBody['data']['account_info']
-          },
-        };
-      } else {
-        return {
-          'success': false,
-          'message': responseBody['message'] ?? 'Login failed. Please check your credentials.',
-        };
-      }
+      return LoginResponseModel.fromJson(jsonDecode(response.body));
     } on TimeoutException {
-      return {
-        'success': false,
-        'message': 'Connection timeout. Please check your internet connection.',
-      };
-    } catch (e) {
-      return {
-        'success': false,
-        'message': 'An unexpected error occurred. Please try again.',
-      };
+      return LoginResponseModel(
+        status: false,
+        message: 'Connection timeout. Please check your internet connection.',
+      );
+    } catch (_) {
+      return LoginResponseModel(
+        status: false,
+        message: 'An unexpected error occurred.',
+      );
     }
   }
 
@@ -59,34 +34,18 @@ class LoginService {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
         },
-      ).timeout(
-        const Duration(seconds: 10),
-        onTimeout: () => throw TimeoutException('Connection timeout'),
-      );
+      ).timeout(const Duration(seconds: 10));
 
-      final responseBody = jsonDecode(response.body);
+      final jsonResponse = jsonDecode(response.body);
 
-      if (responseBody['status'] == true) {
-        return {
-          'success': true,
-          'message': responseBody['message'] ?? 'Logged out successfully',
-        };
-      } else {
-        return {
-          'success': false,
-          'message': responseBody['message'] ?? 'Logout failed. Please try again.',
-        };
-      }
+      return {
+        'success': jsonResponse['status'] == true,
+        'message': jsonResponse['message'] ?? 'Logout response received',
+      };
     } on TimeoutException {
-      return {
-        'success': false,
-        'message': 'Connection timeout. Please check your internet connection.',
-      };
-    } catch (e) {
-      return {
-        'success': false,
-        'message': 'An unexpected error occurred during logout.',
-      };
+      return {'success': false, 'message': 'Timeout during logout'};
+    } catch (_) {
+      return {'success': false, 'message': 'Unexpected error during logout'};
     }
   }
 }

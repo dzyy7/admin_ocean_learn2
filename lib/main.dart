@@ -1,3 +1,4 @@
+import 'package:admin_ocean_learn2/bindings/app_binding.dart';
 import 'package:admin_ocean_learn2/pages/dashboard/dashboard.dart';
 import 'package:admin_ocean_learn2/pages/dashboard/dashboard_controller.dart';
 import 'package:admin_ocean_learn2/pages/intro/intro.dart';
@@ -24,6 +25,7 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'Ocean Learn',
       initialRoute: MyAppRoutes.splashScreen,
+      initialBinding: AppBinding(), 
       getPages: MyAppPage.pages,
     );
   }

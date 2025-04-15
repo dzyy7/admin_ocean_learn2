@@ -13,7 +13,7 @@ class Dashboard extends StatelessWidget {
   const Dashboard({super.key});
   @override
   Widget build(BuildContext context) {
-    final dashboardController = Get.put(DashboardController());
+    final dashboardController = Get.find<DashboardController>();
     final List<Widget> menus = [
       HomePage(),
       SchedulePage(),
