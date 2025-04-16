@@ -1,4 +1,6 @@
+import 'package:admin_ocean_learn2/utils/color_palette.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class NoteInput extends StatelessWidget {
   final TextEditingController controller;
@@ -15,48 +17,87 @@ class NoteInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12)),
+      padding: const EdgeInsets.all(25),
+      decoration: BoxDecoration(
+        color: Colors.white, 
+        borderRadius: BorderRadius.circular(16)
+      ),
       child: Column(
         children: [
           Row(
             children: [
               Expanded(
-                child: ElevatedButton(
-                  onPressed: onSave,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.lightBlue.shade100,
-                    elevation: 0,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                child: Container(
+                  height: 47,
+                  decoration: BoxDecoration(
+                    color: secondaryColor,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: primaryColor, width: 1.5),
                   ),
-                  child: const Text("save note", style: TextStyle(color: Colors.black87)),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(10),
+                      onTap: onSave,
+                      child: Center(
+                        child: Text(
+                          "Save note",
+                          style: GoogleFonts.poppins(
+                            color: textColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
               ),
-              const SizedBox(width: 8),
-              InkWell(
-                onTap: onCancel,
-                child: Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: Colors.lightBlue.shade100,
-                    borderRadius: BorderRadius.circular(8),
+              const SizedBox(width: 16),
+              Container(
+                width: 47,
+                height: 47,
+                decoration: BoxDecoration(
+                  color: secondaryColor,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: primaryColor, width: 1.5),
+                ),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(10),
+                    onTap: onCancel,
+                    child: Icon(
+                      Icons.close, 
+                      color: textColor,
+                      size: 24,
+                    ),
                   ),
-                  child: const Icon(Icons.close, color: Colors.black87),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 16),
-          TextField(
-            controller: controller,
-            decoration: const InputDecoration(
-              hintText: "Write note here",
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.zero,
+          Container(
+            
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            child: TextField(
+              controller: controller,
+              decoration: InputDecoration(
+                hintText: "Write note here",
+                hintStyle: GoogleFonts.poppins(
+                  color: textColor.withOpacity(0.6),
+                  fontSize: 14,
+                ),
+                border: InputBorder.none,
+                contentPadding: EdgeInsets.zero,
+              ),
+              maxLines: 3,
+              style: GoogleFonts.poppins(
+                color: textColor,
+                fontSize: 14,
+              ),
             ),
-            maxLines: 3,
           ),
         ],
       ),

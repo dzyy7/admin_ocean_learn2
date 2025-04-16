@@ -160,7 +160,7 @@ Widget _buildLessonsList() {
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(
+                        MaterialPageRoute(
               builder: (context) => CourseDetailPage(
                 course: lesson,
                 lessonService: _courseService,
