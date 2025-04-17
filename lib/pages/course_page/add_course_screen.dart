@@ -1,4 +1,3 @@
-// screens/add_lesson_screen.dart
 import 'package:admin_ocean_learn2/services/course_service.dart';
 import 'package:admin_ocean_learn2/utils/color_palette.dart';
 import 'package:flutter/material.dart';
@@ -20,12 +19,13 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
   final _descriptionController = TextEditingController();
   final _urlController = TextEditingController();
   DateTime _selectedDate = DateTime.now();
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Create New Lesson'),
+        title: const Text('Create New Course'),
         backgroundColor: primaryColor,
       ),
       body: Padding(
@@ -39,7 +39,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                 TextFormField(
                   controller: _titleController,
                   decoration: const InputDecoration(
-                    labelText: 'Lesson Title',
+                    labelText: 'Course Title',
                     border: OutlineInputBorder(),
                   ),
                   validator: (value) {
@@ -68,16 +68,26 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                 TextFormField(
                   controller: _urlController,
                   decoration: const InputDecoration(
-                    labelText: 'URL (Optional)',
+                    labelText: 'Video URL',
                     border: OutlineInputBorder(),
+                    hintText: 'https://example.com/video',
                   ),
+                  validator: (value) {
+                    if (value != null && value.isNotEmpty) {
+                      bool validURL = Uri.tryParse(value)?.hasAbsolutePath ?? false;
+                      if (!validURL) {
+                        return 'Please enter a valid URL';
+                      }
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 16),
                 Row(
                   children: [
                     Expanded(
                       child: Text(
-                        'Date: ${DateFormat('MMMM d yyyy').format(_selectedDate)}',
+                        'Class Date: ${DateFormat('MMMM d yyyy').format(_selectedDate)}',
                         style: const TextStyle(fontSize: 16),
                       ),
                     ),
@@ -107,23 +117,45 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                       backgroundColor: primaryColor,
                       padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
-                    onPressed: () async {
-                      if (_formKey.currentState!.validate()) {
-                        await widget.lessonService.createLesson(
-                          _titleController.text,
-                          _descriptionController.text,
-                          _urlController.text,
-                          _selectedDate,
-                        );
-                        if (context.mounted) {
-                          Navigator.pop(context, true);
-                        }
-                      }
-                    },
-                    child: const Text(
-                      'Create Lesson',
-                      style: TextStyle(fontSize: 16, color: Colors.white),
-                    ),
+                    onPressed: _isLoading 
+                      ? null 
+                      : () async {
+                          if (_formKey.currentState!.validate()) {
+                            setState(() {
+                              _isLoading = true;
+                            });
+                            
+                            final result = await widget.lessonService.createLesson(
+                              _titleController.text,
+                              _descriptionController.text,
+                              _urlController.text,
+                              _selectedDate,
+                            );
+                            
+                            setState(() {
+                              _isLoading = false;
+                            });
+                            
+                            if (result != null) {
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text("Course created successfully"))
+                                );
+                                Navigator.pop(context, true);
+                              }
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text("Failed to create course"))
+                              );
+                            }
+                          }
+                        },
+                    child: _isLoading
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Text(
+                            'Create Course',
+                            style: TextStyle(fontSize: 16, color: Colors.white),
+                          ),
                   ),
                 ),
               ],

@@ -1,4 +1,3 @@
-// home_page.dart
 import 'package:admin_ocean_learn2/pages/course_page/add_course_screen.dart';
 import 'package:admin_ocean_learn2/pages/course_page/course_detail_page.dart';
 import 'package:admin_ocean_learn2/pages/course_page/course_model.dart';
@@ -20,12 +19,23 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final CourseService _courseService = CourseService();
   bool _isLoading = true;
+  bool _isAdmin = false;
   List<CourseModel> _lessons = [];
 
   @override
   void initState() {
     super.initState();
-    _loadLessons();
+    _checkAdminAndLoadLessons();
+  }
+
+  Future<void> _checkAdminAndLoadLessons() async {
+    setState(() {
+      _isLoading = true;
+    });
+    
+    // Check if the user is admin
+    _isAdmin = await _courseService.isUserAdmin();
+    await _loadLessons();
   }
 
   Future<void> _loadLessons() async {
@@ -41,7 +51,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: netralColor,
       appBar: _buildAppBar(context),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: _isAdmin ? FloatingActionButton(
         onPressed: () async {
           final result = await Navigator.push(
             context,
@@ -57,31 +67,34 @@ class _HomePageState extends State<HomePage> {
         },
         backgroundColor: primaryColor,
         child: const Icon(Icons.add, color: Colors.white),
-      ),
+      ) : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: SafeArea(
         child: _isLoading
             ? const Center(child: CircularProgressIndicator())
-            : SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 20),
-                      _lessons.isNotEmpty
-                          ? _buildFeaturedLesson(_lessons.first)
-                          : const FeaturedLectureCard(
-                              title: 'No Lessons Yet',
-                              date: 'Add your first lesson',
-                              imagePath: 'assets/svg/home1.svg',
-                            ),
-                      const SizedBox(height: 20),
-                      const SearchBarWidget(),
-                      const SizedBox(height: 20),
-                      _buildLessonsList(),
-                      const SizedBox(height: 80),
-                    ],
+            : RefreshIndicator(
+                onRefresh: _loadLessons,
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 20),
+                        _lessons.isNotEmpty
+                            ? _buildFeaturedLesson(_lessons.first)
+                            : const FeaturedLectureCard(
+                                title: 'No Lessons Yet',
+                                date: 'Add your first lesson',
+                                imagePath: 'assets/svg/home1.svg',
+                              ),
+                        const SizedBox(height: 20),
+                        const SearchBarWidget(),
+                        const SizedBox(height: 20),
+                        _buildLessonsList(),
+                        const SizedBox(height: 80),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -137,47 +150,50 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // home_page.dart
-// Update the _buildLessonsList method in the HomePage class
-
-Widget _buildLessonsList() {
-  if (_lessons.isEmpty) {
-    return const Center(
-      child: Text(
-        "No lessons yet. Create one using the + button.",
-        style: TextStyle(fontSize: 16, color: Colors.grey),
-      ),
-    );
-  }
-
-  return ListView.builder(
-    shrinkWrap: true,
-    physics: const NeverScrollableScrollPhysics(),
-    itemCount: _lessons.length,
-    itemBuilder: (context, index) {
-      final lesson = _lessons[index];
-      return GestureDetector(
-        onTap: () {
-          Navigator.push(
-            context,
-                        MaterialPageRoute(
-              builder: (context) => CourseDetailPage(
-                course: lesson,
-                lessonService: _courseService,
-              ),
-            ),
-          ).then((_) => _loadLessons());
-        },
-        child: LessonListItem(
-          title: lesson.title,
-          date: DateFormat('MMMM d yyyy').format(lesson.date),
-          onDelete: () async {
-            await _courseService.deleteLesson(lesson.id);
-            _loadLessons();
-          },
+  Widget _buildLessonsList() {
+    if (_lessons.isEmpty) {
+      return const Center(
+        child: Text(
+          "No lessons yet. Create one using the + button.",
+          style: TextStyle(fontSize: 16, color: Colors.grey),
         ),
       );
-    },
-  );
-}
+    }
+
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: _lessons.length,
+      itemBuilder: (context, index) {
+        final lesson = _lessons[index];
+        return GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => CourseDetailPage(
+                  course: lesson,
+                  lessonService: _courseService,
+                ),
+              ),
+            ).then((_) => _loadLessons());
+          },
+          child: LessonListItem(
+            title: lesson.title,
+            date: DateFormat('MMMM d yyyy').format(lesson.date),
+            onDelete: _isAdmin ? () async {
+              bool success = await _courseService.deleteLesson(lesson.id);
+              if (success) {
+                _loadLessons();
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("Failed to delete course"))
+                );
+              }
+            } : null, // Only show delete option for admin users
+          ),
+        );
+      },
+    );
+  }
 }
