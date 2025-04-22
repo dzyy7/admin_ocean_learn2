@@ -8,7 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class CourseService {
   static const String baseUrl = 'https://ocean-learn-api.rplrus.com/api/v1';
   List<CourseModel> _courses = [];
-  
+
   // Pagination metadata
   int _currentPage = 1;
   int _totalPages = 1;
@@ -46,15 +46,14 @@ class CourseService {
           _courses = (jsonData['data'] as List)
               .map((courseJson) => CourseModel.fromApiJson(courseJson))
               .toList();
-          
+
           // Update pagination info
           _currentPage = jsonData['meta']['current_page'] ?? page;
           _totalPages = jsonData['meta']['last_page'] ?? 1;
           _hasNextPage = jsonData['links']['next'] != null;
           _hasPreviousPage = jsonData['links']['prev'] != null;
         }
-      }
-      else if (response.statusCode == 401) {
+      } else if (response.statusCode == 401) {
         print('Unauthorized access. Token may be expired.');
         LoginController().logout();
       } else {
@@ -70,14 +69,12 @@ class CourseService {
     return _courses;
   }
 
-  // Load next page if available
   Future<bool> loadNextPage() async {
     if (!_hasNextPage) return false;
     await loadLessons(_currentPage + 1);
     return true;
   }
 
-  // Load previous page if available
   Future<bool> loadPreviousPage() async {
     if (!_hasPreviousPage) return false;
     await loadLessons(_currentPage - 1);
@@ -85,7 +82,7 @@ class CourseService {
   }
 
   Future<CourseModel?> createLesson(
-    String title, String description, String url, DateTime date) async {
+      String title, String description, String url, DateTime date) async {
     // Existing code...
     final token = await getToken();
 
@@ -114,15 +111,18 @@ class CourseService {
 
       if (response.statusCode == 201 || response.statusCode == 200) {
         final jsonData = jsonDecode(response.body);
-        if (jsonData['status'] == true && jsonData['data'] != null) {
-          final newCourse = CourseModel.fromApiJson(jsonData['data']);
+        print('Create response: $jsonData'); // Tambahan debug
+
+        final courseData = jsonData['data'];
+        if (courseData != null) {
+          final newCourse = CourseModel.fromApiJson(courseData);
           _courses.add(newCourse);
           return newCourse;
         } else {
-          print('API returned false status or missing data: ${jsonData}');
+          print('Course created but no course data returned.');
         }
       } else {
-        print('Failed to create: ${response.body}');
+        print('Failed to create: ${response.statusCode} - ${response.body}');
       }
     } catch (e) {
       print('Error creating course: $e');
@@ -131,7 +131,6 @@ class CourseService {
     return null;
   }
 
-  // Existing update, delete and other methods...
   Future<bool> updateNote(String courseId, String note) async {
     final token = await getToken();
     if (token == null) return false;
@@ -149,9 +148,9 @@ class CourseService {
       );
 
       if (response.statusCode == 200) {
-        int courseIndex = _courses.indexWhere((course) => course.id == courseId);
-        if (courseIndex != -1) {
-        }
+        int courseIndex =
+            _courses.indexWhere((course) => course.id == courseId);
+        if (courseIndex != -1) {}
         return true;
       }
     } catch (e) {
