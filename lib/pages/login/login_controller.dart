@@ -29,15 +29,15 @@ class LoginController extends GetxController {
           ? response.accountInfo!.tokens[0].token
           : '';
 
+          final prefs = await SharedPreferences.getInstance();
       if (token.isNotEmpty) {
         if (rememberMe.value) {
-          final prefs = await SharedPreferences.getInstance();
           await prefs.setString('token', token);
           await prefs.setString('email', response.accountInfo!.email);
           await prefs.setString('name', response.accountInfo!.name);
-          await prefs.setString('role', response.accountInfo!.role);
+          await prefs.setString('role', response.accountInfo!.role); 
         }
-
+      print(prefs.getString('token'));
         Get.offNamed('/dashboard');
       } else {
         _showErrorDialog('Token not found in response');
@@ -55,6 +55,7 @@ class LoginController extends GetxController {
       final result = await LoginService.logout(token);
       await prefs.clear();
       if (result['success']) {
+            print(prefs.getString('token'));
         Get.offAllNamed('/');
       } else {
         _showErrorDialog(result['message']);

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:admin_ocean_learn2/pages/course_page/course_model.dart';
+import 'package:admin_ocean_learn2/pages/login/login_controller.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -7,20 +8,32 @@ import 'package:shared_preferences/shared_preferences.dart';
 class CourseService {
   static const String baseUrl = 'https://ocean-learn-api.rplrus.com/api/v1';
   List<CourseModel> _courses = [];
+  
+  // Pagination metadata
+  int _currentPage = 1;
+  int _totalPages = 1;
+  bool _hasNextPage = false;
+  bool _hasPreviousPage = false;
+
+  // Getters for pagination info
+  int get currentPage => _currentPage;
+  int get totalPages => _totalPages;
+  bool get hasNextPage => _hasNextPage;
+  bool get hasPreviousPage => _hasPreviousPage;
 
   Future<String?> getToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('token');
   }
 
-  // Load courses from API
-  Future<void> loadLessons() async {
+  // Load courses from API with pagination
+  Future<void> loadLessons(int page) async {
     final token = await getToken();
     if (token == null) return;
 
     try {
       final response = await http.get(
-        Uri.parse('$baseUrl/courses'),
+        Uri.parse('$baseUrl/course?page=$page'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
@@ -33,7 +46,19 @@ class CourseService {
           _courses = (jsonData['data'] as List)
               .map((courseJson) => CourseModel.fromApiJson(courseJson))
               .toList();
+          
+          // Update pagination info
+          _currentPage = jsonData['meta']['current_page'] ?? page;
+          _totalPages = jsonData['meta']['last_page'] ?? 1;
+          _hasNextPage = jsonData['links']['next'] != null;
+          _hasPreviousPage = jsonData['links']['prev'] != null;
         }
+      }
+      else if (response.statusCode == 401) {
+        print('Unauthorized access. Token may be expired.');
+        LoginController().logout();
+      } else {
+        print('Failed to load courses: ${response.body}');
       }
     } catch (e) {
       print('Error loading courses: $e');
@@ -45,63 +70,75 @@ class CourseService {
     return _courses;
   }
 
+  // Load next page if available
+  Future<bool> loadNextPage() async {
+    if (!_hasNextPage) return false;
+    await loadLessons(_currentPage + 1);
+    return true;
+  }
+
+  // Load previous page if available
+  Future<bool> loadPreviousPage() async {
+    if (!_hasPreviousPage) return false;
+    await loadLessons(_currentPage - 1);
+    return true;
+  }
+
   Future<CourseModel?> createLesson(
     String title, String description, String url, DateTime date) async {
-  final token = await getToken();
+    // Existing code...
+    final token = await getToken();
 
-  if (token == null) {
-    print('Token is null');
+    if (token == null) {
+      print('Token is null');
+      return null;
+    }
+
+    final requestBody = {
+      'title': title,
+      'description': description,
+      'video_url': url,
+      'date': DateFormat('yyyy-MM-dd HH:mm').format(date),
+    };
+
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/course'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: jsonEncode(requestBody),
+      );
+
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        final jsonData = jsonDecode(response.body);
+        if (jsonData['status'] == true && jsonData['data'] != null) {
+          final newCourse = CourseModel.fromApiJson(jsonData['data']);
+          _courses.add(newCourse);
+          return newCourse;
+        } else {
+          print('API returned false status or missing data: ${jsonData}');
+        }
+      } else {
+        print('Failed to create: ${response.body}');
+      }
+    } catch (e) {
+      print('Error creating course: $e');
+    }
+
     return null;
   }
 
-  final requestBody = {
-    'title': title,
-    'description': description,
-    'video_url': url,
-    'class_date': DateFormat('yyyy-MM-dd').format(date), // Try simplified date
-  };
-
-  try {
-    final response = await http.post(
-      Uri.parse('$baseUrl/courses'),
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode(requestBody),
-    );
-
-    print('Request body: $requestBody');
-    print('Response status: ${response.statusCode}');
-    print('Response body: ${response.body}');
-
-    if (response.statusCode == 201 || response.statusCode == 200) {
-      final jsonData = jsonDecode(response.body);
-      if (jsonData['status'] == true && jsonData['data'] != null) {
-        final newCourse = CourseModel.fromApiJson(jsonData['data']);
-        _courses.add(newCourse);
-        return newCourse;
-      } else {
-        print('API returned false status or missing data: ${jsonData}');
-      }
-    } else {
-      print('Failed to create: ${response.body}');
-    }
-  } catch (e) {
-    print('Error creating course: $e');
-  }
-
-  return null;
-}
-
-
+  // Existing update, delete and other methods...
   Future<bool> updateNote(String courseId, String note) async {
     final token = await getToken();
     if (token == null) return false;
 
     try {
       final response = await http.patch(
-        Uri.parse('$baseUrl/courses/$courseId'),
+        Uri.parse('$baseUrl/course/$courseId'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
@@ -114,7 +151,6 @@ class CourseService {
       if (response.statusCode == 200) {
         int courseIndex = _courses.indexWhere((course) => course.id == courseId);
         if (courseIndex != -1) {
-          _courses[courseIndex].note = note;
         }
         return true;
       }
@@ -130,7 +166,7 @@ class CourseService {
 
     try {
       final response = await http.delete(
-        Uri.parse('$baseUrl/courses/$courseId'),
+        Uri.parse('$baseUrl/course/$courseId'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
@@ -153,7 +189,7 @@ class CourseService {
 
     try {
       final response = await http.get(
-        Uri.parse('$baseUrl/courses/$courseId'),
+        Uri.parse('$baseUrl/course/$courseId'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',

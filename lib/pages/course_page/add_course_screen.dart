@@ -144,9 +144,11 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                                 Navigator.pop(context, true);
                               }
                             } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text("Failed to create course"))
-                              );
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text("Failed to create course"))
+                                );
+                              }
                             }
                           }
                         },
