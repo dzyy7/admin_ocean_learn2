@@ -79,13 +79,13 @@ class Dashboard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Samudra',
+                            dashboardController.name.value,
                             style: GoogleFonts.montserrat(
                               fontWeight: FontWeight.w600,
                             ),
                           ),
                           Text(
-                            'samudra@gmail.com',
+                            dashboardController.email.value,
                             style: GoogleFonts.montserrat(
                               fontSize: 12,
                               color: textColor,
@@ -165,6 +165,7 @@ class Dashboard extends StatelessWidget {
       );
     });
   }
+
   Widget _buildMenuItem(
     BuildContext context,
     IconData icon,
