@@ -83,8 +83,8 @@ class LessonCard extends StatelessWidget {
               child: InkWell(
                 borderRadius: BorderRadius.circular(24),
                 onTap: () async {
-                  if (course.url.isNotEmpty) {
-                    final Uri url = Uri.parse(course.url);
+                  if (course.videoUrl.isNotEmpty) {
+                    final Uri url = Uri.parse(course.videoUrl);
                     if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('Could not open the URL'))
