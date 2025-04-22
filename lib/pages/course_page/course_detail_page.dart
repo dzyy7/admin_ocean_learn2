@@ -1,4 +1,4 @@
-import 'package:admin_ocean_learn2/pages/course_page/course_model.dart';
+import 'package:admin_ocean_learn2/model/course_model.dart';
 import 'package:admin_ocean_learn2/services/course_service.dart';
 import 'package:admin_ocean_learn2/utils/color_palette.dart';
 import 'package:admin_ocean_learn2/widget/course_page/lesson_card.dart';

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
-import 'package:admin_ocean_learn2/pages/course_page/course_model.dart';
+import 'package:admin_ocean_learn2/model/course_model.dart';
 import 'package:admin_ocean_learn2/pages/course_page/course_detail_page.dart';
 import 'package:admin_ocean_learn2/services/course_service.dart';
 

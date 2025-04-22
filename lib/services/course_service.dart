@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:admin_ocean_learn2/pages/course_page/course_model.dart';
+import 'package:admin_ocean_learn2/model/course_model.dart';
 import 'package:admin_ocean_learn2/pages/login/login_controller.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
