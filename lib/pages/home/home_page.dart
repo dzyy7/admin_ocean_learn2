@@ -3,11 +3,10 @@ import 'package:admin_ocean_learn2/widget/home_component/featured_lecture_card.d
 import 'package:admin_ocean_learn2/widget/home_component/lesson_list.dart';
 import 'package:admin_ocean_learn2/widget/home_component/pagination.dart';
 import 'package:flutter/material.dart';
-
 import 'package:admin_ocean_learn2/services/course_service.dart';
 import 'package:admin_ocean_learn2/utils/color_palette.dart';
 import 'package:admin_ocean_learn2/widget/home_component/search_bar_widget.dart';
-import 'package:admin_ocean_learn2/pages/course_page/course_model.dart';
+import 'package:admin_ocean_learn2/model/course_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {

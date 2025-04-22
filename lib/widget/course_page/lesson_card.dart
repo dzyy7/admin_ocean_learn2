@@ -1,4 +1,4 @@
-import 'package:admin_ocean_learn2/pages/course_page/course_model.dart';
+import 'package:admin_ocean_learn2/model/course_model.dart';
 import 'package:admin_ocean_learn2/utils/color_palette.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -51,7 +51,7 @@ class LessonCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
-                  "Attendance",
+                  "QR Code",
                   style: GoogleFonts.poppins(
                     color: textColor,
                     fontSize: 14,
