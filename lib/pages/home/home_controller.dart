@@ -12,6 +12,28 @@ class HomeController extends GetxController {
   var isLoadingMore = false.obs;
   var lessons = <CourseModel>[].obs;
   final scrollController = ScrollController();
+  var searchQuery = ''.obs;
+var sortByNewest = true.obs;
+
+List<CourseModel> get filteredLessons {
+  var filtered = lessons.where((lesson) =>
+      lesson.title.toLowerCase().contains(searchQuery.value.toLowerCase())).toList();
+
+  filtered.sort((a, b) => sortByNewest.value
+      ? b.date.compareTo(a.date)
+      : a.date.compareTo(b.date));
+
+  return filtered;
+}
+
+void updateSearchQuery(String query) {
+  searchQuery.value = query;
+}
+
+void toggleSortOrder() {
+  sortByNewest.value = !sortByNewest.value;
+}
+
 
   @override
   void onInit() {
@@ -32,13 +54,17 @@ class HomeController extends GetxController {
     final prefs = await SharedPreferences.getInstance();
     name.value = prefs.getString('name') ?? '';
   }
+Future<void> loadInitialLessons() async {
+  isLoading.value = true;
+  await courseService.loadLessons(1);
 
-  Future<void> loadInitialLessons() async {
-    isLoading.value = true;
-    await courseService.loadLessons(1);
-    lessons.assignAll(courseService.getLessons());
-    isLoading.value = false;
-  }
+  final sorted = courseService.getLessons()
+    ..sort((a, b) => b.date.compareTo(a.date)); // terbaru dulu
+
+  lessons.assignAll(sorted);
+  isLoading.value = false;
+}
+
 
   Future<void> loadMoreLessons() async {
     if (isLoadingMore.value) return;

@@ -4,11 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class SearchBarWidget extends StatelessWidget {
+  final Function(String)? onChanged;
   final Function()? onTunePressed;
-  
+  final bool isNewest; // new
+
   const SearchBarWidget({
     super.key,
+    this.onChanged,
     this.onTunePressed,
+    required this.isNewest,
   });
 
   @override
@@ -29,6 +33,7 @@ class SearchBarWidget extends StatelessWidget {
                 const SizedBox(width: 8),
                 Expanded(
                   child: TextField(
+                    onChanged: onChanged,
                     decoration: InputDecoration(
                       border: InputBorder.none,
                       hintText: 'Find your lesson',
@@ -41,13 +46,8 @@ class SearchBarWidget extends StatelessWidget {
             ),
           ),
         ),
-        
-        // Separator
         const SizedBox(width: 12),
-        
-        // Tune button as separate element
         Container(
-          
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
             color: Colors.white,
@@ -55,7 +55,10 @@ class SearchBarWidget extends StatelessWidget {
           ),
           child: InkWell(
             onTap: onTunePressed,
-            child: const Icon(Icons.tune, color: Colors.lightBlue),
+            child: Icon(
+              isNewest ? Icons.arrow_downward : Icons.arrow_upward,
+              color: Colors.lightBlue,
+            ),
           ),
         ),
       ],
