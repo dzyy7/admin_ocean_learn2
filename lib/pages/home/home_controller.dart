@@ -12,6 +12,28 @@ class HomeController extends GetxController {
   var isLoadingMore = false.obs;
   var lessons = <CourseModel>[].obs;
   final scrollController = ScrollController();
+  var searchQuery = ''.obs;
+var sortByNewest = true.obs;
+
+List<CourseModel> get filteredLessons {
+  var filtered = lessons.where((lesson) =>
+      lesson.title.toLowerCase().contains(searchQuery.value.toLowerCase())).toList();
+
+  filtered.sort((a, b) => sortByNewest.value
+      ? b.date.compareTo(a.date)
+      : a.date.compareTo(b.date));
+
+  return filtered;
+}
+
+void updateSearchQuery(String query) {
+  searchQuery.value = query;
+}
+
+void toggleSortOrder() {
+  sortByNewest.value = !sortByNewest.value;
+}
+
 
   @override
   void onInit() {

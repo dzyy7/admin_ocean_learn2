@@ -33,7 +33,8 @@ class HomePage extends StatelessWidget {
             ),
             actions: [
               IconButton(
-                icon: const Icon(Icons.notifications_outlined, color: Colors.black),
+                icon: const Icon(Icons.notifications_outlined,
+                    color: Colors.black),
                 onPressed: () {},
               ),
             ],
@@ -59,20 +60,27 @@ class HomePage extends StatelessWidget {
                               FeaturedLessonCard(
                                 lessons: controller.lessons,
                                 courseService: controller.courseService,
-                                onRefresh: (_) => controller.loadInitialLessons(),
+                                onRefresh: (_) =>
+                                    controller.loadInitialLessons(),
                               ),
                               const SizedBox(height: 20),
-                              const SearchBarWidget(),
+                              Obx(() => SearchBarWidget(
+                                    onChanged: controller.updateSearchQuery,
+                                    onTunePressed: controller.toggleSortOrder,
+                                    isNewest: controller.sortByNewest.value,
+                                  )),
                               const SizedBox(height: 20),
                               LessonList(
-                                lessons: controller.lessons,
+                                lessons: controller.filteredLessons,
                                 courseService: controller.courseService,
-                                onRefresh: (_) => controller.loadInitialLessons(),
+                                onRefresh: (_) =>
+                                    controller.loadInitialLessons(),
                               ),
                               if (controller.isLoadingMore.value)
                                 const Padding(
                                   padding: EdgeInsets.symmetric(vertical: 16.0),
-                                  child: Center(child: CircularProgressIndicator()),
+                                  child: Center(
+                                      child: CircularProgressIndicator()),
                                 ),
                               const SizedBox(height: 80),
                             ]),
