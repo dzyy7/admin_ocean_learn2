@@ -113,53 +113,58 @@ class CourseService {
   }
 
   Future<CourseModel?> createLesson(
-      String title, String description, String url, DateTime date) async {
-    final token = await getToken();
+    String title, 
+    String description, 
+    String url, 
+    DateTime classDate,
+    DateTime releaseDate) async {
+  final token = await getToken();
 
-    if (token == null) {
-      print('Token is null');
-      return null;
-    }
-
-    final requestBody = {
-      'title': title,
-      'description': description,
-      'video_url': url,
-      'date': DateFormat('yyyy-MM-dd HH:mm').format(date),
-    };
-
-    try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/course'),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: jsonEncode(requestBody),
-      );
-
-      if (response.statusCode == 201 || response.statusCode == 200) {
-        final jsonData = jsonDecode(response.body);
-        print('Create response: $jsonData');
-
-        final courseData = jsonData['data'];
-        if (courseData != null) {
-          final newCourse = CourseModel.fromApiJson(courseData);
-          _courses.add(newCourse);
-          return newCourse;
-        } else {
-          print('Course created but no course data returned.');
-        }
-      } else {
-        print('Failed to create: ${response.statusCode} - ${response.body}');
-      }
-    } catch (e) {
-      print('Error creating course: $e');
-    }
-
+  if (token == null) {
+    print('Token is null');
     return null;
   }
+
+  final requestBody = {
+    'title': title,
+    'description': description,
+    'video_url': url,
+    'class_date': DateFormat('yyyy-MM-dd HH:mm').format(classDate),
+    'release_date': DateFormat('yyyy-MM-dd HH:mm').format(releaseDate),
+  };
+
+  try {
+    final response = await http.post(
+      Uri.parse('$baseUrl/course'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: jsonEncode(requestBody),
+    );
+
+    if (response.statusCode == 201 || response.statusCode == 200) {
+      final jsonData = jsonDecode(response.body);
+      print('Create response: $jsonData');
+
+      final courseData = jsonData['data'];
+      if (courseData != null) {
+        final newCourse = CourseModel.fromApiJson(courseData);
+        _courses.add(newCourse);
+        return newCourse;
+      } else {
+        print('Course created but no course data returned.');
+      }
+    } else {
+      print('Failed to create: ${response.statusCode} - ${response.body}');
+    }
+  } catch (e) {
+    print('Error creating course: $e');
+  }
+
+  return null;
+}
 
   Future<bool> updateNote(String courseId, String note) async {
     final token = await getToken();

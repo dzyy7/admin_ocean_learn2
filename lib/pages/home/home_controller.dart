@@ -54,13 +54,17 @@ void toggleSortOrder() {
     final prefs = await SharedPreferences.getInstance();
     name.value = prefs.getString('name') ?? '';
   }
+Future<void> loadInitialLessons() async {
+  isLoading.value = true;
+  await courseService.loadLessons(1);
 
-  Future<void> loadInitialLessons() async {
-    isLoading.value = true;
-    await courseService.loadLessons(1);
-    lessons.assignAll(courseService.getLessons());
-    isLoading.value = false;
-  }
+  final sorted = courseService.getLessons()
+    ..sort((a, b) => b.date.compareTo(a.date)); // terbaru dulu
+
+  lessons.assignAll(sorted);
+  isLoading.value = false;
+}
+
 
   Future<void> loadMoreLessons() async {
     if (isLoadingMore.value) return;
