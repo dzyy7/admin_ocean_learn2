@@ -4,7 +4,6 @@ class CourseModel {
   final String description;
   final String videoUrl;
   final DateTime date;
-  final DateTime? releaseDate;
   final String? qrCode;
   final DateTime? qrEndDate;
   String note;
@@ -15,7 +14,6 @@ class CourseModel {
     required this.description,
     required this.videoUrl,
     required this.date,
-    this.releaseDate,
     this.qrCode,
     this.qrEndDate,
     this.note = '',
@@ -33,7 +31,6 @@ class CourseModel {
       description: data['description'] ?? '',
       videoUrl: data['video_url'] ?? '',
       date: DateTime.tryParse(dateData['class_date'] ?? '') ?? DateTime.now(),
-      releaseDate: DateTime.tryParse(dateData['release_at'] ?? ''),
       qrCode: qrData['qr_code'],
       qrEndDate: DateTime.tryParse(qrData['end_at'] ?? ''),
       note: data['note'] ?? '',
