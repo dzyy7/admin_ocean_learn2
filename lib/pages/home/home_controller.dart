@@ -40,12 +40,10 @@ void toggleSortOrder() {
     super.onInit();
     loadUserName();
     loadInitialLessons();
-    scrollController.addListener(_scrollListener);
   }
 
   @override
   void onClose() {
-    scrollController.removeListener(_scrollListener);
     scrollController.dispose();
     super.onClose();
   }
@@ -65,23 +63,4 @@ Future<void> loadInitialLessons() async {
   isLoading.value = false;
 }
 
-
-  Future<void> loadMoreLessons() async {
-    if (isLoadingMore.value) return;
-
-    isLoadingMore.value = true;
-    final hasMore = await courseService.loadMoreLessons();
-    if (hasMore) {
-      lessons.assignAll(courseService.getLessons());
-    }
-    isLoadingMore.value = false;
-  }
-
-  void _scrollListener() {
-    if (scrollController.position.pixels >= scrollController.position.maxScrollExtent - 200 &&
-        !isLoadingMore.value &&
-        courseService.hasNextPage) {
-      loadMoreLessons();
-    }
-  }
 }

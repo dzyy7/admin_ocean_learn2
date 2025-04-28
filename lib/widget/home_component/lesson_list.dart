@@ -1,3 +1,4 @@
+import 'package:admin_ocean_learn2/pages/course_page/edit_course_page.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:admin_ocean_learn2/model/course_model.dart';
@@ -74,10 +75,25 @@ class LessonList extends StatelessWidget {
             },
             trailing: IconButton(
               icon: const Icon(Icons.more_vert),
-              onPressed: () => _showOptionsMenu(context, () async {
-                await courseService.deleteLesson(lesson.id);
-                onRefresh(courseService.currentPage);
-              }),
+              onPressed: () => _showOptionsMenu(
+                context,
+                () async {
+                  await courseService.deleteLesson(lesson.id);
+                  onRefresh(courseService.currentPage);
+                },
+                () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EditCoursePage(
+                        course: lesson,
+                        courseService: courseService,
+                        onEdited: () => onRefresh(courseService.currentPage),
+                      ),
+                    ),
+                  );
+                },
+              ),
             ),
           ),
         );
@@ -85,7 +101,8 @@ class LessonList extends StatelessWidget {
     );
   }
 
-  void _showOptionsMenu(BuildContext context, VoidCallback onDelete) {
+  void _showOptionsMenu(
+      BuildContext context, VoidCallback onDelete, VoidCallback onEdit) {
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -96,6 +113,14 @@ class LessonList extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
+              ListTile(
+                leading: const Icon(Icons.edit),
+                title: const Text('Edit Lesson'),
+                onTap: () {
+                  Navigator.pop(context);
+                  onEdit();
+                },
+              ),
               ListTile(
                 leading: const Icon(Icons.delete_outline, color: Colors.red),
                 title: const Text('Delete Lesson'),

@@ -12,14 +12,10 @@ class CourseService {
   // Pagination metadata
   int _currentPage = 1;
   int _totalPages = 1;
-  bool _hasNextPage = false;
-  bool _hasPreviousPage = false;
 
   // Getters for pagination info
   int get currentPage => _currentPage;
   int get totalPages => _totalPages;
-  bool get hasNextPage => _hasNextPage;
-  bool get hasPreviousPage => _hasPreviousPage;
 
   Future<String?> getToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -50,8 +46,6 @@ class CourseService {
           // Update pagination info
           _currentPage = jsonData['meta']['current_page'] ?? page;
           _totalPages = jsonData['meta']['last_page'] ?? 1;
-          _hasNextPage = jsonData['links']['next'] != null;
-          _hasPreviousPage = jsonData['links']['prev'] != null;
         }
       } else if (response.statusCode == 401) {
         print('Unauthorized access. Token may be expired.');
@@ -64,107 +58,59 @@ class CourseService {
     }
   }
 
-  // Load more courses for infinite scrolling
-  Future<bool> loadMoreLessons() async {
-    if (!_hasNextPage) return false;
-    
-    final nextPage = _currentPage + 1;
-    final token = await getToken();
-    if (token == null) return false;
-
-    try {
-      final response = await http.get(
-        Uri.parse('$baseUrl/course?page=$nextPage'),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
-      );
-
-      if (response.statusCode == 200) {
-        final jsonData = jsonDecode(response.body);
-        if (jsonData['status'] == true && jsonData['data'] != null) {
-          final newCourses = (jsonData['data'] as List)
-              .map((courseJson) => CourseModel.fromApiJson(courseJson))
-              .toList();
-          
-          // Append new courses to existing list
-          _courses.addAll(newCourses);
-
-          // Update pagination info
-          _currentPage = jsonData['meta']['current_page'] ?? nextPage;
-          _totalPages = jsonData['meta']['last_page'] ?? 1;
-          _hasNextPage = jsonData['links']['next'] != null;
-          _hasPreviousPage = jsonData['links']['prev'] != null;
-          
-          return true;
-        }
-      }
-    } catch (e) {
-      print('Error loading more courses: $e');
-    }
-    
-    return false;
-  }
-
   // Get stored courses
   List<CourseModel> getLessons() {
     return _courses;
   }
 
-  Future<CourseModel?> createLesson(
-    String title, 
-    String description, 
-    String url, 
-    DateTime classDate,
-    DateTime releaseDate) async {
-  final token = await getToken();
+  Future<CourseModel?> createLesson(String title, String description,
+      String url, DateTime classDate) async {
+    final token = await getToken();
 
-  if (token == null) {
-    print('Token is null');
+    if (token == null) {
+      print('Token is null');
+      return null;
+    }
+
+    final requestBody = {
+      'title': title,
+      'description': description,
+      'video_url': url,
+      'date': DateFormat('yyyy-MM-dd HH:mm').format(classDate),
+    };
+
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/course'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: jsonEncode(requestBody),
+      );
+
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        final jsonData = jsonDecode(response.body);
+        print('Create response: $jsonData');
+
+        final courseData = jsonData['data'];
+        if (courseData != null) {
+          final newCourse = CourseModel.fromApiJson(courseData);
+          _courses.add(newCourse);
+          return newCourse;
+        } else {
+          print('Course created but no course data returned.');
+        }
+      } else {
+        print('Failed to create: ${response.statusCode} - ${response.body}');
+      }
+    } catch (e) {
+      print('Error creating course: $e');
+    }
+
     return null;
   }
-
-  final requestBody = {
-    'title': title,
-    'description': description,
-    'video_url': url,
-    'class_date': DateFormat('yyyy-MM-dd HH:mm').format(classDate),
-    'release_date': DateFormat('yyyy-MM-dd HH:mm').format(releaseDate),
-  };
-
-  try {
-    final response = await http.post(
-      Uri.parse('$baseUrl/course'),
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-      body: jsonEncode(requestBody),
-    );
-
-    if (response.statusCode == 201 || response.statusCode == 200) {
-      final jsonData = jsonDecode(response.body);
-      print('Create response: $jsonData');
-
-      final courseData = jsonData['data'];
-      if (courseData != null) {
-        final newCourse = CourseModel.fromApiJson(courseData);
-        _courses.add(newCourse);
-        return newCourse;
-      } else {
-        print('Course created but no course data returned.');
-      }
-    } else {
-      print('Failed to create: ${response.statusCode} - ${response.body}');
-    }
-  } catch (e) {
-    print('Error creating course: $e');
-  }
-
-  return null;
-}
 
   Future<bool> updateNote(String courseId, String note) async {
     final token = await getToken();
@@ -191,6 +137,55 @@ class CourseService {
     } catch (e) {
       print('Error updating note: $e');
     }
+    return false;
+  }
+
+  Future<bool> updateLesson({
+    required String courseId,
+    required String title,
+    required String description,
+    required String videoUrl,
+    required DateTime date,
+  }) async {
+    final token = await getToken();
+    if (token == null) return false;
+
+    try {
+      final response = await http.patch(
+        Uri.parse('$baseUrl/course/$courseId'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'title': title,
+          'description': description,
+          'video_url': videoUrl,
+          'date': DateFormat('yyyy-MM-dd HH:mm').format(date),
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        // Update local list
+        final index = _courses.indexWhere((c) => c.id == courseId);
+        if (index != -1) {
+          _courses[index] = CourseModel(
+            id: courseId,
+            title: title,
+            description: description,
+            videoUrl: videoUrl,
+            date: date,
+            qrCode: _courses[index].qrCode,
+            qrEndDate: _courses[index].qrEndDate,
+            note: _courses[index].note,
+          );
+        }
+        return true;
+      }
+    } catch (e) {
+      print('Error updating course: $e');
+    }
+
     return false;
   }
 
