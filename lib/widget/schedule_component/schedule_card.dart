@@ -4,14 +4,16 @@ class ScheduleCard extends StatelessWidget {
   final int weekNumber;
   final String date;
   final bool isPast;
-  final Function()? onEditPressed;
+  final String? title;
+  final VoidCallback? onViewDetails;
 
   const ScheduleCard({
     Key? key,
     required this.weekNumber,
     required this.date,
-    required this.isPast,
-    this.onEditPressed,
+    required this.isPast, 
+    this.title,
+    this.onViewDetails,
   }) : super(key: key);
 
   @override
@@ -21,59 +23,57 @@ class ScheduleCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
-      child: Stack(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Week $weekNumber: Lecture Title",
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
+          Text(
+            "Week $weekNumber: ${title ?? 'Lecture Title'}",
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            isPast ? "Completed on $date" : "Upcoming on $date",
+            style: TextStyle(
+              color: isPast ? Colors.grey : Colors.green,
+              fontSize: 14,
+            ),
+          ),
+          const SizedBox(height: 16),
+          InkWell(
+            onTap: onViewDetails,
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: const Color(0xFFE1F5FE),
+                borderRadius: BorderRadius.circular(8),
               ),
-              const SizedBox(height: 4),
-              Text(
-                isPast ? "Incoming this week on $date" : "Incoming on $date",
-                style: const TextStyle(
-                  color: Colors.black87,
-                  fontSize: 14,
-                ),
-              ),
-              const SizedBox(height: 16),
-              InkWell(
-                onTap: () {},
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE1F5FE),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Text(
-                    "Mark your attendance",
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  Icon(Icons.info_outline, size: 18, color: Colors.blue),
+                  SizedBox(width: 8),
+                  Text(
+                    "View Course Details",
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: Colors.black87,
+                      color: Colors.blue,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                ),
+                ],
               ),
-            ],
-          ),
-          Positioned(
-            top: 0,
-            right: 0,
-            child: IconButton(
-              icon: const Icon(Icons.edit, size: 20),
-              onPressed: onEditPressed,
-              splashRadius: 20,
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(),
-              tooltip: "Edit",
             ),
           ),
         ],
