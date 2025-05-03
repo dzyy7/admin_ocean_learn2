@@ -63,12 +63,18 @@ class CourseService {
     return _courses;
   }
 
-  Future<CourseModel?> createLesson(String title, String description,
-      String url, DateTime classDate) async {
+  Future<CourseModel?> createLesson(
+      String title, String description, String url, DateTime classDate) async {
     final token = await getToken();
 
     if (token == null) {
       print('Token is null');
+      return null;
+    }
+
+    // CEK: Apakah sudah ada pelajaran di minggu ini
+    if (isLessonExistInWeek(classDate)) {
+      print('A lesson already exists in this week. Cannot create another.');
       return null;
     }
 
@@ -92,15 +98,11 @@ class CourseService {
 
       if (response.statusCode == 201 || response.statusCode == 200) {
         final jsonData = jsonDecode(response.body);
-        print('Create response: $jsonData');
-
         final courseData = jsonData['data'];
         if (courseData != null) {
           final newCourse = CourseModel.fromApiJson(courseData);
           _courses.add(newCourse);
           return newCourse;
-        } else {
-          print('Course created but no course data returned.');
         }
       } else {
         print('Failed to create: ${response.statusCode} - ${response.body}');
@@ -150,6 +152,12 @@ class CourseService {
     final token = await getToken();
     if (token == null) return false;
 
+    // CEK: Apakah sudah ada pelajaran lain di minggu ini (kecuali dirinya sendiri)
+    if (isLessonExistInWeek(date, excludeCourseId: courseId)) {
+      print('Another lesson already exists in this week. Cannot update.');
+      return false;
+    }
+
     try {
       final response = await http.patch(
         Uri.parse('$baseUrl/course/$courseId'),
@@ -166,7 +174,6 @@ class CourseService {
       );
 
       if (response.statusCode == 200) {
-        // Update local list
         final index = _courses.indexWhere((c) => c.id == courseId);
         if (index != -1) {
           _courses[index] = CourseModel(
@@ -235,6 +242,23 @@ class CourseService {
       print('Error getting course detail: $e');
     }
     return null;
+  }
+
+  bool isInSameWeek(DateTime date1, DateTime date2) {
+    final startOfWeek1 = date1.subtract(Duration(days: date1.weekday - 1));
+    final startOfWeek2 = date2.subtract(Duration(days: date2.weekday - 1));
+    return startOfWeek1.year == startOfWeek2.year &&
+        startOfWeek1.month == startOfWeek2.month &&
+        startOfWeek1.day == startOfWeek2.day;
+  }
+
+  bool isLessonExistInWeek(DateTime dateToCheck, {String? excludeCourseId}) {
+    return _courses.any((course) {
+      if (excludeCourseId != null && course.id == excludeCourseId) {
+        return false;
+      }
+      return isInSameWeek(course.date, dateToCheck);
+    });
   }
 
   Future<bool> isUserAdmin() async {
