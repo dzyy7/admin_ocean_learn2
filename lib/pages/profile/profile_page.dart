@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:admin_ocean_learn2/utils/color_palette.dart';
+import 'package:admin_ocean_learn2/utils/user_storage.dart';
+import 'package:admin_ocean_learn2/pages/login/login_controller.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final userName = UserStorage.getName() ?? 'User';
+    final userEmail = UserStorage.getEmail() ?? 'email@example.com';
+    
     return Scaffold(
       backgroundColor: netralColor,
       appBar: AppBar(
@@ -62,8 +68,8 @@ class ProfilePage extends StatelessWidget {
                   // Greeting Text
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Text(
+                    children: [
+                      const Text(
                         'Hello, ',
                         style: TextStyle(
                           fontSize: 20,
@@ -71,15 +77,15 @@ class ProfilePage extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        'Divers',
-                        style: TextStyle(
+                        userName,
+                        style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Colors.blue,
                         ),
                       ),
-                      Text(
-                        ' Samudra!',
+                      const Text(
+                        '!',
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -87,13 +93,20 @@ class ProfilePage extends StatelessWidget {
                       ),
                     ],
                   ),
+                  const SizedBox(height: 8),
+                  Text(
+                    userEmail,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey,
+                    ),
+                  ),
                 ],
               ),
             ),
             
             const SizedBox(height: 16),
             
-            // Account Settings Card
             Container(
               width: double.infinity,
               decoration: BoxDecoration(
@@ -114,7 +127,7 @@ class ProfilePage extends StatelessWidget {
                   const SizedBox(height: 16),
                   // Change Password Option
                   _buildSettingOption(
-                    title: 'change my password',
+                    title: 'Change my password',
                     onTap: () {},
                   ),
                   const Divider(),
@@ -129,7 +142,6 @@ class ProfilePage extends StatelessWidget {
             
             const Spacer(),
             
-            // Log Out Button
             Container(
               width: double.infinity,
               height: 50,
@@ -138,7 +150,10 @@ class ProfilePage extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
               ),
               child: TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  // Use the LoginController to handle logout
+                  Get.find<LoginController>().logout();
+                },
                 child: const Text(
                   'Log out',
                   style: TextStyle(

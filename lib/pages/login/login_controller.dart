@@ -1,7 +1,7 @@
 import 'package:admin_ocean_learn2/services/login_service.dart';
+import 'package:admin_ocean_learn2/utils/user_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 
 class LoginController extends GetxController {
@@ -29,15 +29,17 @@ class LoginController extends GetxController {
           ? response.accountInfo!.tokens[0].token
           : '';
 
-          final prefs = await SharedPreferences.getInstance();
       if (token.isNotEmpty) {
         if (rememberMe.value) {
-          await prefs.setString('token', token);
-          await prefs.setString('email', response.accountInfo!.email);
-          await prefs.setString('name', response.accountInfo!.name);
-          await prefs.setString('role', response.accountInfo!.role); 
+          await UserStorage.saveUserData(
+            token: token,
+            email: response.accountInfo!.email,
+            name: response.accountInfo!.name,
+            role: response.accountInfo!.role,
+          );
         }
-      print(prefs.getString('token'));
+        
+        print('Token saved: ${UserStorage.getToken()}');
         Get.offNamed('/dashboard');
       } else {
         _showErrorDialog('Token not found in response');
@@ -48,14 +50,13 @@ class LoginController extends GetxController {
   }
 
   void logout() async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('token') ?? '';
+    final token = UserStorage.getToken() ?? '';
 
     if (token.isNotEmpty) {
       final result = await LoginService.logout(token);
-      await prefs.clear();
+      await UserStorage.clearUserData();
       if (result['success']) {
-            print(prefs.getString('token'));
+        print('After logout token: ${UserStorage.getToken()}');
         Get.offAllNamed('/');
       } else {
         _showErrorDialog(result['message']);

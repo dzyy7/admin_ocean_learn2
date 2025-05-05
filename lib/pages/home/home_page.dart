@@ -49,7 +49,6 @@ class HomePage extends StatelessWidget {
                 : RefreshIndicator(
                     onRefresh: () => controller.loadInitialLessons(),
                     child: CustomScrollView(
-                      controller: controller.scrollController,
                       physics: const AlwaysScrollableScrollPhysics(),
                       slivers: [
                         SliverPadding(

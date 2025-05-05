@@ -1,7 +1,7 @@
 import 'package:admin_ocean_learn2/utils/color_palette.dart';
+import 'package:admin_ocean_learn2/utils/user_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:admin_ocean_learn2/routes/my_routes.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -41,9 +41,8 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   }
 
   Future<void> _checkAuthentication() async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('token');
-    print(prefs.getString('token'));
+    final token = UserStorage.getToken();
+    print('Token from GetStorage: $token');
     await Future.delayed(const Duration(seconds: 1));
 
     if (token != null && token.isNotEmpty) {

@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:admin_ocean_learn2/model/course_model.dart';
 import 'package:admin_ocean_learn2/pages/login/login_controller.dart';
+import 'package:admin_ocean_learn2/utils/user_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class CourseService {
   static const String baseUrl = 'https://ocean-learn-api.rplrus.com/api/v1';
@@ -17,14 +17,13 @@ class CourseService {
   int get currentPage => _currentPage;
   int get totalPages => _totalPages;
 
-  Future<String?> getToken() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString('token');
+  String? getToken() {
+    return UserStorage.getToken();
   }
 
   // Load courses from API with pagination
   Future<void> loadLessons(int page) async {
-    final token = await getToken();
+    final token = getToken();
     if (token == null) return;
 
     try {
@@ -65,14 +64,14 @@ class CourseService {
 
   Future<CourseModel?> createLesson(
       String title, String description, String url, DateTime classDate) async {
-    final token = await getToken();
+    final token = getToken();
 
     if (token == null) {
       print('Token is null');
       return null;
     }
 
-    // CEK: Apakah sudah ada pelajaran di minggu ini
+    // Check if a lesson already exists in this week
     if (isLessonExistInWeek(classDate)) {
       print('A lesson already exists in this week. Cannot create another.');
       return null;
@@ -115,7 +114,7 @@ class CourseService {
   }
 
   Future<bool> updateNote(String courseId, String note) async {
-    final token = await getToken();
+    final token = getToken();
     if (token == null) return false;
 
     try {
@@ -149,10 +148,10 @@ class CourseService {
     required String videoUrl,
     required DateTime date,
   }) async {
-    final token = await getToken();
+    final token = getToken();
     if (token == null) return false;
 
-    // CEK: Apakah sudah ada pelajaran lain di minggu ini (kecuali dirinya sendiri)
+    // Check if another lesson exists in this week (except this course)
     if (isLessonExistInWeek(date, excludeCourseId: courseId)) {
       print('Another lesson already exists in this week. Cannot update.');
       return false;
@@ -197,7 +196,7 @@ class CourseService {
   }
 
   Future<bool> deleteLesson(String courseId) async {
-    final token = await getToken();
+    final token = getToken();
     if (token == null) return false;
 
     try {
@@ -220,7 +219,7 @@ class CourseService {
   }
 
   Future<CourseModel?> getCourseDetail(String courseId) async {
-    final token = await getToken();
+    final token = getToken();
     if (token == null) return null;
 
     try {
@@ -262,8 +261,7 @@ class CourseService {
   }
 
   Future<bool> isUserAdmin() async {
-    final prefs = await SharedPreferences.getInstance();
-    final role = prefs.getString('role') ?? '';
+    final role = UserStorage.getRole() ?? '';
     return role.toLowerCase() == 'admin';
   }
 }
