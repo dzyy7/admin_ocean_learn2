@@ -1,7 +1,7 @@
 import 'package:admin_ocean_learn2/utils/color_palette.dart';
+import 'package:admin_ocean_learn2/utils/user_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:admin_ocean_learn2/routes/my_routes.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -41,13 +41,19 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   }
 
   Future<void> _checkAuthentication() async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('token');
-    print(prefs.getString('token'));
+    final token = UserStorage.getToken();
+    final userRole = UserStorage.getRole();
+    print('Token from GetStorage: $token');
+    print('User role: $userRole');
     await Future.delayed(const Duration(seconds: 1));
 
     if (token != null && token.isNotEmpty) {
-      Get.offNamed(MyAppRoutes.dashboard);
+      if (userRole != null && userRole.toLowerCase() == 'admin') {
+        Get.offNamed(MyAppRoutes.dashboard);
+      } else {
+        await UserStorage.clearUserData();
+        Get.offNamed(MyAppRoutes.introPage);
+      }
     } else {
       Get.offNamed(MyAppRoutes.introPage);
     }
@@ -76,7 +82,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
               ),
               const SizedBox(height: 20),
               Text(
-                'Ocean Learn',
+                'Ocean Learn Admin',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,

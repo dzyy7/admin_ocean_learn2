@@ -1,19 +1,17 @@
-import 'package:admin_ocean_learn2/bindings/app_binding.dart';
-import 'package:admin_ocean_learn2/pages/dashboard/dashboard.dart';
-import 'package:admin_ocean_learn2/pages/dashboard/dashboard_controller.dart';
-import 'package:admin_ocean_learn2/pages/intro/intro.dart';
-import 'package:admin_ocean_learn2/pages/login/login_controller.dart';
-import 'package:admin_ocean_learn2/pages/login/login_page.dart';
-import 'package:admin_ocean_learn2/pages/splashscreen/splashscreen.dart';
 import 'package:admin_ocean_learn2/routes/my_pages.dart';
 import 'package:admin_ocean_learn2/routes/my_routes.dart';
+import 'package:admin_ocean_learn2/utils/user_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:get_storage/get_storage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+  
+  // Initialize GetStorage
+  await GetStorage.init();
+  await UserStorage.init();
+  
   runApp(const MyApp());
 }
 
@@ -23,9 +21,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: 'Ocean Learn',
+      title: 'Ocean Learn Admin',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        useMaterial3: true,
+      ),
       initialRoute: MyAppRoutes.splashScreen,
-      initialBinding: AppBinding(), 
       getPages: MyAppPage.pages,
     );
   }
