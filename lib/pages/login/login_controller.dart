@@ -25,6 +25,12 @@ class LoginController extends GetxController {
     isLoading.value = false;
 
     if (response.status && response.accountInfo != null) {
+      // Check if user has admin role
+      if (response.accountInfo!.role.toLowerCase() != 'admin') {
+        _showErrorDialog('Access denied. Only admin users can login to this application.');
+        return;
+      }
+      
       final token = response.accountInfo!.tokens.isNotEmpty
           ? response.accountInfo!.tokens[0].token
           : '';

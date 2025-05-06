@@ -9,11 +9,9 @@ class CourseService {
   static const String baseUrl = 'https://ocean-learn-api.rplrus.com/api/v1';
   List<CourseModel> _courses = [];
 
-  // Pagination metadata
   int _currentPage = 1;
   int _totalPages = 1;
 
-  // Getters for pagination info
   int get currentPage => _currentPage;
   int get totalPages => _totalPages;
 
@@ -21,7 +19,6 @@ class CourseService {
     return UserStorage.getToken();
   }
 
-  // Load courses from API with pagination
   Future<void> loadLessons(int page) async {
     final token = getToken();
     if (token == null) return;
@@ -42,7 +39,6 @@ class CourseService {
               .map((courseJson) => CourseModel.fromApiJson(courseJson))
               .toList();
 
-          // Update pagination info
           _currentPage = jsonData['meta']['current_page'] ?? page;
           _totalPages = jsonData['meta']['last_page'] ?? 1;
         }
@@ -57,7 +53,6 @@ class CourseService {
     }
   }
 
-  // Get stored courses
   List<CourseModel> getLessons() {
     return _courses;
   }
@@ -71,7 +66,6 @@ class CourseService {
       return null;
     }
 
-    // Check if a lesson already exists in this week
     if (isLessonExistInWeek(classDate)) {
       print('A lesson already exists in this week. Cannot create another.');
       return null;
@@ -151,7 +145,6 @@ class CourseService {
     final token = getToken();
     if (token == null) return false;
 
-    // Check if another lesson exists in this week (except this course)
     if (isLessonExistInWeek(date, excludeCourseId: courseId)) {
       print('Another lesson already exists in this week. Cannot update.');
       return false;

@@ -151,7 +151,6 @@ class ProfilePage extends StatelessWidget {
               ),
               child: TextButton(
                 onPressed: () {
-                  // Use the LoginController to handle logout
                   Get.find<LoginController>().logout();
                 },
                 child: const Text(
