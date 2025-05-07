@@ -1,4 +1,5 @@
 import 'package:admin_ocean_learn2/model/course_model.dart';
+import 'package:admin_ocean_learn2/pages/course_page/qr_code_page/qr_code_page.dart';
 import 'package:admin_ocean_learn2/services/course_service.dart';
 import 'package:admin_ocean_learn2/utils/color_palette.dart';
 import 'package:admin_ocean_learn2/widget/course_page/lesson_card.dart';
@@ -64,6 +65,21 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
       _isLoading = false;
     });
   }
+  
+  void _navigateToQRCodePage() {
+    if (_currentCourse.qrCode != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => QRCodePage(course: _currentCourse),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No QR code available for this course'))
+      );
+    }
+  }
 
   @override
   void dispose() {
@@ -89,6 +105,15 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
             fontWeight: FontWeight.bold,
           ),
         ),
+        actions: [
+          // Add QR code button to app bar
+          if (_currentCourse.qrCode != null)
+            IconButton(
+              icon: const Icon(Icons.qr_code, color: Colors.black),
+              onPressed: _navigateToQRCodePage,
+              tooltip: 'Show QR Code',
+            ),
+        ],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
