@@ -1,9 +1,11 @@
+import 'dart:convert';
 import 'package:admin_ocean_learn2/model/course_model.dart';
 import 'package:admin_ocean_learn2/utils/color_palette.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class LessonCard extends StatelessWidget {
@@ -43,19 +45,30 @@ class LessonCard extends StatelessWidget {
                   ),
                 ],
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 18),
-                decoration: BoxDecoration(
-                  color:  secondaryColor,
-                  border: Border.all(color: primaryColor, width: 1.5),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  "QR Code",
-                  style: GoogleFonts.poppins(
-                    color: textColor,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
+              GestureDetector(
+                onTap: () {
+                  if (course.qrCode != null) {
+                    _showQRCodeDialog(context);
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('No QR code available for this lesson'))
+                    );
+                  }
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 18),
+                  decoration: BoxDecoration(
+                    color: secondaryColor,
+                    border: Border.all(color: primaryColor, width: 1.5),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    "QR Code",
+                    style: GoogleFonts.poppins(
+                      color: textColor,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
@@ -114,5 +127,95 @@ class LessonCard extends StatelessWidget {
       ),
     );
   }
-}
 
+  void _showQRCodeDialog(BuildContext context) {
+    String decodedData = '';
+    
+    if (course.qrCode != null) {
+      try {
+        // Decode base64 QR code
+        decodedData = utf8.decode(base64.decode(course.qrCode!));
+      } catch (e) {
+        decodedData = course.qrCode!; // Fallback to original string if decoding fails
+      }
+    }
+    
+    // Calculate QR expiration time
+    String expiryText = 'No expiration';
+    if (course.qrEndDate != null) {
+      final now = DateTime.now();
+      if (course.qrEndDate!.isAfter(now)) {
+        final difference = course.qrEndDate!.difference(now);
+        if (difference.inDays > 0) {
+          expiryText = 'Expires in ${difference.inDays} days';
+        } else if (difference.inHours > 0) {
+          expiryText = 'Expires in ${difference.inHours} hours';
+        } else {
+          expiryText = 'Expires in ${difference.inMinutes} minutes';
+        }
+      } else {
+        expiryText = 'Expired';
+      }
+    }
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Course QR Code',
+                  style: GoogleFonts.poppins(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                if (decodedData.isNotEmpty)
+                  QrImageView(
+                    data: decodedData,
+                    version: QrVersions.auto,
+                    size: 200.0,
+                    backgroundColor: Colors.white,
+                  )
+                else
+                  const Text('No QR data available'),
+                const SizedBox(height: 10),
+                Text(
+                  expiryText,
+                  style: GoogleFonts.poppins(
+                    color: course.qrEndDate != null && course.qrEndDate!.isBefore(DateTime.now())
+                        ? Colors.red
+                        : Colors.black54,
+                    fontSize: 14,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: primaryColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(
+                    'Close',
+                    style: GoogleFonts.poppins(color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}

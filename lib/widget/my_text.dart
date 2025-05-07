@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class MyText extends StatelessWidget {
   final String text;
   final double fontsize;
   final String fontfamily;
+  final FontWeight fontWeight;
   final Color color;
   final TextAlign textAlign;
 
@@ -12,6 +14,7 @@ class MyText extends StatelessWidget {
     required this.text,
     required this.fontsize,
     required this.fontfamily,
+    required this.fontWeight,
     required this.color,
     required this.textAlign,
   }) : super(key: key);
@@ -21,8 +24,8 @@ class MyText extends StatelessWidget {
     return Text(
       textAlign: textAlign,
       text,
-      style: TextStyle(
-        fontFamily: fontfamily,
+      style: GoogleFonts.poppins(
+        fontWeight: fontWeight,
         fontSize: fontsize,
         color: color,
       ),
