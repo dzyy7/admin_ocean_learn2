@@ -71,7 +71,7 @@ class Dashboard extends StatelessWidget {
                       CircleAvatar(
                         radius: 25,
                         backgroundImage: NetworkImage(
-                          'https://i.pinimg.com/736x/9f/be/f5/9fbef5a4ae96b3498fad7873a8ff9d09.jpg',
+                          'https://i.pinimg.com/736x/3c/ae/07/3cae079ca0b9e55ec6bfc1b358c9b1e2.jpg',
                         ),
                       ),
                       const SizedBox(width: 15),
