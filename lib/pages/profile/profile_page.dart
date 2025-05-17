@@ -9,8 +9,19 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final userName = UserStorage.getName() ?? 'User';
-    final userEmail = UserStorage.getEmail() ?? 'email@example.com';
+    String? userName = UserStorage.getName();
+    String? userEmail = UserStorage.getEmail();
+    
+    if (userName == null || userName.isEmpty) {
+      userName = LoginController.getSessionName();
+    }
+    
+    if (userEmail == null || userEmail.isEmpty) {
+      userEmail = LoginController.getSessionEmail();
+    }
+    
+    userName = userName ?? 'User';
+    userEmail = userEmail ?? 'email@example.com';
     
     return Scaffold(
       backgroundColor: netralColor,
@@ -44,7 +55,6 @@ class ProfilePage extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            // Profile Card
             Container(
               width: double.infinity,
               decoration: BoxDecoration(
@@ -54,7 +64,6 @@ class ProfilePage extends StatelessWidget {
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: [
-                  // Profile Image
                   ClipRRect(
                     borderRadius: BorderRadius.circular(60),
                     child: Image.network(
@@ -65,7 +74,6 @@ class ProfilePage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  // Greeting Text
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -125,13 +133,11 @@ class ProfilePage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  // Change Password Option
                   _buildSettingOption(
                     title: 'Change my password',
                     onTap: () {},
                   ),
                   const Divider(),
-                  // Edit Personal Details Option
                   _buildSettingOption(
                     title: 'Edit personal details',
                     onTap: () {},

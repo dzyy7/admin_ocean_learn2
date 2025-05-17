@@ -127,18 +127,7 @@ class LoginPage extends StatelessWidget {
             ),
           ],
         ),
-        TextButton(
-          onPressed: () {
-          },
-          child: Text(
-            'forgot password?',
-            style: GoogleFonts.poppins(
-              fontSize: 14,
-              fontWeight: FontWeight.normal,
-              color: Colors.black54,
-            ),
-          ),
-        ),
+        
       ],
     );
   }
