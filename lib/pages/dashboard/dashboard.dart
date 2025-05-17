@@ -97,47 +97,58 @@ class Dashboard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 10),
-                _buildMenuItem(
-                  context,
-                  Icons.home,
-                  'Home',
-                  isSelected: dashboardController.selectedIndex.value == 0,
-                  onTap: () {
-                    dashboardController.changeMenu(0);
-                    Navigator.pop(context);
-                  },
+                Expanded(
+                  child: ListView(
+                    padding: EdgeInsets.zero,
+                    children: [
+                      _buildMenuItem(
+                        context,
+                        Icons.home,
+                        'Home',
+                        isSelected:
+                            dashboardController.selectedIndex.value == 0,
+                        onTap: () {
+                          dashboardController.changeMenu(0);
+                          Navigator.pop(context);
+                        },
+                      ),
+                      _buildMenuItem(
+                        context,
+                        Icons.calendar_today,
+                        'Schedule',
+                        isSelected:
+                            dashboardController.selectedIndex.value == 1,
+                        onTap: () {
+                          dashboardController.changeMenu(1);
+                          Navigator.pop(context);
+                        },
+                      ),
+                      _buildMenuItem(
+                        context,
+                        Icons.payment,
+                        'Pembayaran',
+                        isSelected:
+                            dashboardController.selectedIndex.value == 2,
+                        onTap: () {
+                          dashboardController.changeMenu(2);
+                          Navigator.pop(context);
+                        },
+                      ),
+                      _buildMenuItem(
+                        context,
+                        Icons.person,
+                        'Profile',
+                        isSelected:
+                            dashboardController.selectedIndex.value == 3,
+                        onTap: () {
+                          dashboardController.changeMenu(3);
+                          Navigator.pop(context);
+                        },
+                      ),
+                    ],
+                  ),
                 ),
-                _buildMenuItem(
-                  context,
-                  Icons.calendar_today,
-                  'Schedule',
-                  isSelected: dashboardController.selectedIndex.value == 1,
-                  onTap: () {
-                    dashboardController.changeMenu(1);
-                    Navigator.pop(context);
-                  },
-                ),
-                _buildMenuItem(
-                  context,
-                  Icons.payment,
-                  'Pembayaran',
-                  isSelected: dashboardController.selectedIndex.value == 2,
-                  onTap: () {
-                    dashboardController.changeMenu(2);
-                    Navigator.pop(context);
-                  },
-                ),
-                _buildMenuItem(
-                  context,
-                  Icons.person,
-                  'Profile',
-                  isSelected: dashboardController.selectedIndex.value == 3,
-                  onTap: () {
-                    dashboardController.changeMenu(3);
-                    Navigator.pop(context);
-                  },
-                ),
-                const Spacer(),
+
                 Padding(
                   padding: const EdgeInsets.all(12),
                   child: Container(
