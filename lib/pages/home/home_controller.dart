@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:admin_ocean_learn2/services/course_service.dart';
 import 'package:admin_ocean_learn2/model/course_model.dart';
 import 'package:admin_ocean_learn2/utils/user_storage.dart';
+import 'package:admin_ocean_learn2/pages/login/login_controller.dart';
 
 class HomeController extends GetxController {
   final CourseService courseService = CourseService();
@@ -47,7 +48,15 @@ class HomeController extends GetxController {
   }
 
   Future<void> loadUserName() async {
-    name.value = UserStorage.getName() ?? '';
+    // Try to get from persistent storage first
+    String? userName = UserStorage.getName();
+    
+    // If not found in persistent storage, try to get from session memory
+    if (userName == null || userName.isEmpty) {
+      userName = LoginController.getSessionName();
+    }
+    
+    name.value = userName ?? '';
   }
   
   Future<void> loadInitialLessons() async {

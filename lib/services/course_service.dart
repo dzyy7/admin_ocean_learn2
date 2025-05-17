@@ -15,8 +15,9 @@ class CourseService {
   int get currentPage => _currentPage;
   int get totalPages => _totalPages;
 
-  String? getToken() {
-    return UserStorage.getToken();
+ String? getToken() {
+    // First try to get token from persistent storage, then from session if not available
+    return UserStorage.getToken() ?? LoginController.getSessionToken();
   }
 
   Future<void> loadLessons(int page) async {
@@ -254,7 +255,8 @@ class CourseService {
   }
 
   Future<bool> isUserAdmin() async {
-    final role = UserStorage.getRole() ?? '';
+    // First try to get role from persistent storage, then from session if not available
+    final role = UserStorage.getRole() ?? LoginController.getSessionRole() ?? '';
     return role.toLowerCase() == 'admin';
   }
 }
