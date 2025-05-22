@@ -81,7 +81,6 @@ class IntroPage extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Skip button
                   TextButton(
                     onPressed: () {
                       Get.offNamed(MyAppRoutes.loginPage);

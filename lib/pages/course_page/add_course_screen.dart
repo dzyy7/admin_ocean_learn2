@@ -43,7 +43,6 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
     );
 
     if (pickedDate != null) {
-      // Now select the time
       final TimeOfDay initialTime = TimeOfDay.fromDateTime(initialDate);
       final TimeOfDay? pickedTime = await showTimePicker(
         context: context,
@@ -61,7 +60,6 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
       );
 
       if (pickedTime != null) {
-        // Combine the date and time
         final DateTime combinedDateTime = DateTime(
           pickedDate.year,
           pickedDate.month,
@@ -82,13 +80,11 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Create New Course'),
-        backgroundColor: primaryColor,
+        backgroundColor: netralColor,
         elevation: 0,
       ),
+      backgroundColor: netralColor,
       body: Container(
-        decoration: BoxDecoration(
-          color: Colors.grey[50],
-        ),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Form(
@@ -98,6 +94,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Card(
+                    color: pureWhite,
                     elevation: 2,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -190,6 +187,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                   ),
                   const SizedBox(height: 16),
                   Card(
+                    color: pureWhite,
                     elevation: 2,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -239,7 +237,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                                 label: const Text('Change'),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: primaryColor,
-                                  foregroundColor: Colors.white,
+                                  foregroundColor: pureWhite,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(8),
                                   ),

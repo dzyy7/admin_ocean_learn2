@@ -1,4 +1,3 @@
-// lib/pages/course_page/qr_code_page.dart
 import 'dart:convert';
 import 'package:admin_ocean_learn2/model/course_model.dart';
 import 'package:admin_ocean_learn2/utils/color_palette.dart';
@@ -23,7 +22,6 @@ class QRCodePage extends StatelessWidget {
       }
     }
 
-    // Calculate QR expiration time
     String expiryText = 'No expiration';
     Color expiryColor = Colors.black54;
     

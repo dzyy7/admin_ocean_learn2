@@ -58,7 +58,6 @@ class _EditCoursePageState extends State<EditCoursePage> {
     );
 
     if (pickedDate != null) {
-      // Now select the time
       final TimeOfDay initialTime = TimeOfDay.fromDateTime(selectedDate);
       final TimeOfDay? pickedTime = await showTimePicker(
         context: context,
@@ -76,7 +75,6 @@ class _EditCoursePageState extends State<EditCoursePage> {
       );
 
       if (pickedTime != null) {
-        // Combine the date and time
         setState(() {
           selectedDate = DateTime(
             pickedDate.year,
@@ -153,13 +151,11 @@ class _EditCoursePageState extends State<EditCoursePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Edit Course"),
-        backgroundColor: primaryColor,
+        backgroundColor: netralColor,
         elevation: 0,
       ),
+      backgroundColor: netralColor,
       body: Container(
-        decoration: BoxDecoration(
-          color: Colors.grey[50],
-        ),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: SingleChildScrollView(
@@ -167,6 +163,7 @@ class _EditCoursePageState extends State<EditCoursePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Card(
+                  color: pureWhite,
                   elevation: 2,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -237,6 +234,7 @@ class _EditCoursePageState extends State<EditCoursePage> {
                 ),
                 const SizedBox(height: 16),
                 Card(
+                  color: pureWhite,
                   elevation: 2,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),

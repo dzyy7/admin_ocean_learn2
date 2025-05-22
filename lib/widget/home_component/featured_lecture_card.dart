@@ -38,7 +38,7 @@ class FeaturedLessonCard extends StatelessWidget {
                   ),
                 ),
               );
-              onRefresh(courseService.currentPage);
+              onRefresh(0);
             }
           : null,
       child: Container(
@@ -82,7 +82,7 @@ class FeaturedLessonCard extends StatelessWidget {
                           ),
                         ),
                       );
-                      onRefresh(courseService.currentPage);
+                      onRefresh(0);
                     }
                   : null,
               style: ElevatedButton.styleFrom(

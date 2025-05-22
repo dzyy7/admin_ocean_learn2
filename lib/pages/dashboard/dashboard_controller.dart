@@ -13,11 +13,9 @@ class DashboardController extends GetxController {
   }
   
   void loadUserData() {
-    // Try to get from persistent storage first
     String? userName = UserStorage.getName();
     String? userEmail = UserStorage.getEmail();
     
-    // If not found in persistent storage, try to get from session memory
     if (userName == null || userName.isEmpty) {
       userName = LoginController.getSessionName();
     }
@@ -26,7 +24,6 @@ class DashboardController extends GetxController {
       userEmail = LoginController.getSessionEmail();
     }
     
-    // Set the values with fallbacks
     name.value = userName ?? 'User';
     email.value = userEmail ?? 'user@example.com';
   }

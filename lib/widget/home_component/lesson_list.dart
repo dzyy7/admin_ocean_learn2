@@ -71,7 +71,7 @@ class LessonList extends StatelessWidget {
                   ),
                 ),
               );
-              onRefresh(courseService.currentPage);
+              onRefresh(0);
             },
             trailing: IconButton(
               icon: const Icon(Icons.more_vert),
@@ -79,7 +79,7 @@ class LessonList extends StatelessWidget {
                 context,
                 () async {
                   await courseService.deleteLesson(lesson.id);
-                  onRefresh(courseService.currentPage);
+                  onRefresh(0);
                 },
                 () {
                   Navigator.push(
@@ -88,7 +88,7 @@ class LessonList extends StatelessWidget {
                       builder: (context) => EditCoursePage(
                         course: lesson,
                         courseService: courseService,
-                        onEdited: () => onRefresh(courseService.currentPage),
+                        onEdited: () => onRefresh(0),
                       ),
                     ),
                   );

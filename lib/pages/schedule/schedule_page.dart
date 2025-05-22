@@ -12,7 +12,6 @@ class SchedulePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Initialize the controller
     final controller = Get.put(ScheduleController());
 
     return Scaffold(

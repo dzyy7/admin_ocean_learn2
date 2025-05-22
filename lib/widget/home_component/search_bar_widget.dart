@@ -1,4 +1,3 @@
-// widgets/search_bar_widget.dart
 import 'package:admin_ocean_learn2/utils/color_palette.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';

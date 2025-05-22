@@ -92,28 +92,22 @@ class CalendarWidget extends StatelessWidget {
     final firstDayOfMonth = DateTime(currentMonth.year, currentMonth.month, 1);
     final lastDayOfMonth = DateTime(currentMonth.year, currentMonth.month + 1, 0);
     
-    // Calculate how many empty spots we need before the first day
-    final firstWeekday = firstDayOfMonth.weekday % 7; // 0 = Sunday, 1 = Monday, etc.
+    final firstWeekday = firstDayOfMonth.weekday % 7; 
     
-    // Calculate total number of days to display (including empty spots)
     final totalDays = firstWeekday + lastDayOfMonth.day;
     final totalWeeks = (totalDays / 7).ceil();
     
     final calendarDays = List<Widget>.generate(totalWeeks * 7, (index) {
-      // Empty spots before the first day of the month
       if (index < firstWeekday) {
         return const SizedBox(width: 36, height: 36);
       }
       
-      // Calculate the day number
       final dayNumber = index - firstWeekday + 1;
       
-      // Days after the last day of the month
       if (dayNumber > lastDayOfMonth.day) {
         return const SizedBox(width: 36, height: 36);
       }
       
-      // Create the date for this calendar day
       final date = DateTime(currentMonth.year, currentMonth.month, dayNumber);
       final isMarked = controller.isDateMarked(date);
       final isToday = controller.isToday(date);
@@ -171,7 +165,6 @@ class CalendarWidget extends StatelessWidget {
       );
     });
     
-    // Create rows for each week
     final weeks = <Widget>[];
     for (int i = 0; i < totalWeeks; i++) {
       final weekDays = calendarDays.sublist(i * 7, (i + 1) * 7);

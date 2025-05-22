@@ -1,28 +1,14 @@
+import 'package:admin_ocean_learn2/widget/profile_component/logout_button.dart';
+import 'package:admin_ocean_learn2/widget/profile_component/profile_info_card.dart';
+import 'package:admin_ocean_learn2/widget/profile_component/profile_setting_card.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:admin_ocean_learn2/utils/color_palette.dart';
-import 'package:admin_ocean_learn2/utils/user_storage.dart';
-import 'package:admin_ocean_learn2/pages/login/login_controller.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    String? userName = UserStorage.getName();
-    String? userEmail = UserStorage.getEmail();
-    
-    if (userName == null || userName.isEmpty) {
-      userName = LoginController.getSessionName();
-    }
-    
-    if (userEmail == null || userEmail.isEmpty) {
-      userEmail = LoginController.getSessionEmail();
-    }
-    
-    userName = userName ?? 'User';
-    userEmail = userEmail ?? 'email@example.com';
-    
     return Scaffold(
       backgroundColor: netralColor,
       appBar: AppBar(
@@ -40,9 +26,7 @@ class ProfilePage extends StatelessWidget {
         ),
         leading: IconButton(
           icon: const Icon(Icons.menu, color: Colors.black),
-          onPressed: () {
-            Scaffold.of(context).openDrawer();
-          },
+          onPressed: () => Scaffold.of(context).openDrawer(),
         ),
         actions: [
           IconButton(
@@ -51,149 +35,15 @@ class ProfilePage extends StatelessWidget {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      body: const Padding(
+        padding: EdgeInsets.all(16.0),
         child: Column(
           children: [
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(60),
-                    child: Image.network(
-                      'https://i.pinimg.com/736x/3c/ae/07/3cae079ca0b9e55ec6bfc1b358c9b1e2.jpg', // Replace with your image path
-                      width: 120,
-                      height: 120,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        'Hello, ',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        userName,
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blue,
-                        ),
-                      ),
-                      const Text(
-                        '!',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    userEmail,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            
-            const SizedBox(height: 16),
-            
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Account Settings',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  _buildSettingOption(
-                    title: 'Change my password',
-                    onTap: () {},
-                  ),
-                  const Divider(),
-                  _buildSettingOption(
-                    title: 'Edit personal details',
-                    onTap: () {},
-                  ),
-                ],
-              ),
-            ),
-            
-            const Spacer(),
-            
-            Container(
-              width: double.infinity,
-              height: 50,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: TextButton(
-                onPressed: () {
-                  Get.find<LoginController>().logout();
-                },
-                child: const Text(
-                  'Log out',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-  
-  Widget _buildSettingOption({required String title, required VoidCallback onTap}) {
-    return InkWell(
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            const Icon(
-              Icons.chevron_right,
-              color: Colors.black54,
-            ),
+            ProfileInfoCard(),
+            SizedBox(height: 16),
+            ProfileSettingsCard(),
+            Spacer(),
+            LogoutButton(),
           ],
         ),
       ),

@@ -8,13 +8,10 @@ class PaymentController extends GetxController {
   final isLoading = true.obs;
   final error = ''.obs;
 
-  // All subscriptions
   final subscriptions = <SubscriptionModel>[].obs;
 
-  // Subscriptions grouped by month
   final subscriptionsByMonth = <String, List<SubscriptionModel>>{}.obs;
 
-  // For filtering
   final selectedMonth = ''.obs;
   final months = <String>[].obs;
 
@@ -29,19 +26,15 @@ class PaymentController extends GetxController {
       isLoading.value = true;
       error.value = '';
 
-      // Get all subscriptions
       final allSubscriptions = await SubscriptionService.getSubscriptions();
       subscriptions.value = allSubscriptions;
 
-      // Get subscriptions by month
       final groupedSubscriptions =
           await SubscriptionService.getSubscriptionsByMonth();
       subscriptionsByMonth.value = groupedSubscriptions;
 
-      // Extract available months
       months.value = groupedSubscriptions.keys.toList();
 
-      // Set selected month to the most recent one if available
       if (months.isNotEmpty) {
         selectedMonth.value = months.first;
       }

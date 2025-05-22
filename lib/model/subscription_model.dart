@@ -16,7 +16,6 @@ class SubscriptionModel {
   });
 
   factory SubscriptionModel.fromJson(Map<String, dynamic> json) {
-    // Extract month and year from paid_at date
     String paidAt = json['detail']['paid_at'] ?? '';
     List<String> dateParts = paidAt.split(' ');
     String month = dateParts.length >= 2 ? dateParts[1] : '';

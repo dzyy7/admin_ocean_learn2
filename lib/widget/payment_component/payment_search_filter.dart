@@ -11,7 +11,7 @@ class SearchAndFilter extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: pureWhite,
+        color: secondaryColor,
         boxShadow: [
           BoxShadow(color: Colors.grey.withOpacity(0.2), blurRadius: 4, offset: const Offset(0, 2)),
         ],
@@ -19,30 +19,7 @@ class SearchAndFilter extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          TextField(
-            decoration: InputDecoration(
-              hintText: 'Search invoice or customer',
-              hintStyle: TextStyle(color: textColor.withOpacity(0.5)),
-              prefixIcon: const Icon(Icons.search, color: primaryColor),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: secondaryColor),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: secondaryColor),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: primaryColor),
-              ),
-              filled: true,
-              fillColor: netralColor.withOpacity(0.3),
-              contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
-            ),
-          ),
-          const SizedBox(height: 12),
-          SizedBox(
+                    SizedBox(
             height: 40,
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,

@@ -48,10 +48,8 @@ class HomeController extends GetxController {
   }
 
   Future<void> loadUserName() async {
-    // Try to get from persistent storage first
     String? userName = UserStorage.getName();
     
-    // If not found in persistent storage, try to get from session memory
     if (userName == null || userName.isEmpty) {
       userName = LoginController.getSessionName();
     }
@@ -64,7 +62,7 @@ class HomeController extends GetxController {
     await courseService.loadLessons(1);
 
     final sorted = courseService.getLessons()
-      ..sort((a, b) => b.date.compareTo(a.date)); // sort by newest first
+      ..sort((a, b) => b.date.compareTo(a.date)); 
 
     lessons.assignAll(sorted);
     isLoading.value = false;

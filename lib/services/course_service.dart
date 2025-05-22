@@ -9,14 +9,9 @@ class CourseService {
   static const String baseUrl = 'https://ocean-learn-api.rplrus.com/api/v1';
   List<CourseModel> _courses = [];
 
-  int _currentPage = 1;
-  int _totalPages = 1;
 
-  int get currentPage => _currentPage;
-  int get totalPages => _totalPages;
 
  String? getToken() {
-    // First try to get token from persistent storage, then from session if not available
     return UserStorage.getToken() ?? LoginController.getSessionToken();
   }
 
@@ -40,8 +35,7 @@ class CourseService {
               .map((courseJson) => CourseModel.fromApiJson(courseJson))
               .toList();
 
-          _currentPage = jsonData['meta']['current_page'] ?? page;
-          _totalPages = jsonData['meta']['last_page'] ?? 1;
+
         }
       } else if (response.statusCode == 401) {
         print('Unauthorized access. Token may be expired.');
@@ -255,7 +249,6 @@ class CourseService {
   }
 
   Future<bool> isUserAdmin() async {
-    // First try to get role from persistent storage, then from session if not available
     final role = UserStorage.getRole() ?? LoginController.getSessionRole() ?? '';
     return role.toLowerCase() == 'admin';
   }

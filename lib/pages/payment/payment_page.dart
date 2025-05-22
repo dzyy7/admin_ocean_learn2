@@ -83,8 +83,9 @@ class PaymentPage extends StatelessWidget {
             pinned: true,
             delegate: _StickyHeaderDelegate(
               child: SearchAndFilter(controller: controller),
-              minHeight: 140,
-              maxHeight: 140,
+              minHeight: 80,
+              maxHeight: 80,
+              
             ),
           ),
         ],

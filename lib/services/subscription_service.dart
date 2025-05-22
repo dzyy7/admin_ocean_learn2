@@ -33,7 +33,6 @@ class SubscriptionService {
     }
   }
   
-  // Get subscriptions grouped by month and year
   static Future<Map<String, List<SubscriptionModel>>> getSubscriptionsByMonth() async {
     try {
       final subscriptions = await getSubscriptions();
@@ -47,10 +46,8 @@ class SubscriptionService {
         result[key]!.add(subscription);
       }
       
-      // Sort the keys in descending order (most recent month first)
       final sortedKeys = result.keys.toList()..sort((a, b) => b.compareTo(a));
       
-      // Create a new map with sorted keys
       final sortedResult = <String, List<SubscriptionModel>>{};
       for (var key in sortedKeys) {
         sortedResult[key] = result[key]!;

@@ -9,28 +9,23 @@ class LoginController extends GetxController {
   RxBool isLoading = false.obs;
   RxBool rememberMe = false.obs;
   
-  // Session token storage (not persisted)
   static String? _sessionToken;
   static String? _sessionEmail;
   static String? _sessionName;
   static String? _sessionRole;
   
-  // Getter for session token
   static String? getSessionToken() {
     return _sessionToken;
   }
   
-  // Getter for session email
   static String? getSessionEmail() {
     return _sessionEmail;
   }
   
-  // Getter for session name
   static String? getSessionName() {
     return _sessionName;
   }
   
-  // Getter for session role
   static String? getSessionRole() {
     return _sessionRole;
   }
@@ -50,7 +45,6 @@ class LoginController extends GetxController {
     isLoading.value = false;
 
     if (response.status && response.accountInfo != null) {
-      // Check if user has admin role
       if (response.accountInfo!.role.toLowerCase() != 'admin') {
         _showErrorDialog('Access denied. Only admin users can login to this application.');
         return;
@@ -61,13 +55,11 @@ class LoginController extends GetxController {
           : '';
 
       if (token.isNotEmpty) {
-        // Always store in session memory
         _sessionToken = token;
         _sessionEmail = response.accountInfo!.email;
         _sessionName = response.accountInfo!.name;
         _sessionRole = response.accountInfo!.role;
         
-        // If remember me is checked, also persist to storage
         if (rememberMe.value) {
           await UserStorage.saveUserData(
             token: token,
@@ -88,13 +80,11 @@ class LoginController extends GetxController {
   }
 
   void logout() async {
-    // Get token from storage or session
     final token = UserStorage.getToken() ?? _sessionToken ?? '';
 
     if (token.isNotEmpty) {
       final result = await LoginService.logout(token);
       
-      // Clear both persistent storage and session memory
       await UserStorage.clearUserData();
       _sessionToken = null;
       _sessionEmail = null;

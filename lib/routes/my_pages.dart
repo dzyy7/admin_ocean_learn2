@@ -33,7 +33,7 @@ class MyAppPage {
     ),
     GetPage(
       name: MyAppRoutes.dashboard, 
-      page: () => Dashboard(),
+      page: () => DashboardPage(),
       binding: DashboardBinding(),
     ),
     GetPage(

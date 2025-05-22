@@ -18,7 +18,7 @@ class NoteButton extends StatelessWidget {
       ),
       child: Container(
         width: double.infinity,
-        height: 47, // Fixed height for better control
+        height: 47, 
         decoration: BoxDecoration(
           color: secondaryColor, 
           borderRadius: BorderRadius.circular(10),

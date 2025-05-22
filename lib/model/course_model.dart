@@ -20,7 +20,6 @@ class CourseModel {
   });
 
   factory CourseModel.fromApiJson(Map<String, dynamic> json) {
-    // Extract data from nested structure
     final data = json['data'] ?? {};
     final dateData = json['date'] ?? {};
     final qrData = json['qr_data'] ?? {};

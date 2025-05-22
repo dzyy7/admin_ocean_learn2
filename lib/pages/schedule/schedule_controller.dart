@@ -21,7 +21,6 @@ class ScheduleController extends GetxController {
     await courseService.loadLessons(1);
     courses.value = courseService.getLessons();
     
-    // Update marked dates based on course dates
     updateMarkedDates();
     
     isLoading.value = false;
@@ -31,7 +30,6 @@ class ScheduleController extends GetxController {
     final newMarkedDates = <DateTime>[];
     
     for (final course in courses) {
-      // Add only the date part (no time) to marked dates
       final courseDate = DateTime(course.date.year, course.date.month, course.date.day);
       newMarkedDates.add(courseDate);
     }
@@ -56,7 +54,6 @@ class ScheduleController extends GetxController {
     );
   }
 
-  // Get course for a specific date (if exists)
   CourseModel? getCourseForDate(DateTime date) {
     final normalizedDate = DateTime(date.year, date.month, date.day);
     
