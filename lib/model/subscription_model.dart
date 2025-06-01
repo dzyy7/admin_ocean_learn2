@@ -2,6 +2,7 @@ class SubscriptionModel {
   final int id;
   final int userId;
   final String status;
+  final String uuid;
   final SubscriptionDetail detail;
   final String month;
   final String year;
@@ -10,6 +11,7 @@ class SubscriptionModel {
     required this.id,
     required this.userId,
     required this.status,
+    required this.uuid,
     required this.detail,
     required this.month,
     required this.year,
@@ -25,6 +27,7 @@ class SubscriptionModel {
       id: json['id'] ?? 0,
       userId: json['user_id'] ?? 0,
       status: json['status'] ?? '',
+      uuid: json['uuid'] ?? '',
       detail: SubscriptionDetail.fromJson(json['detail'] ?? {}),
       month: month,
       year: year,
