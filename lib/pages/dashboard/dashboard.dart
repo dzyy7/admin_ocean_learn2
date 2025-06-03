@@ -1,3 +1,4 @@
+import 'package:admin_ocean_learn2/pages/member/member_page.dart';
 import 'package:admin_ocean_learn2/widget/dashboard_component/app_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -17,6 +18,7 @@ class DashboardPage extends StatelessWidget {
       HomePage(),
       SchedulePage(),
       PaymentPage(),
+      MemberPage(),
       ProfilePage(),
     ];
 

@@ -7,7 +7,7 @@ class LoginService {
   static Future<LoginResponseModel> login(String email, String password) async {
     try {
       final response = await http.post(
-        Uri.parse('https://ocean-learn-api.rplrus.com/api/v1/user/auth'),
+        Uri.parse('https://ocean-learn-api.rplrus.com/api/v1/admin/auth'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'email': email, 'password': password}),
       ).timeout(const Duration(seconds: 10));
