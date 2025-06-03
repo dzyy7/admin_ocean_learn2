@@ -55,11 +55,20 @@ class AppDrawer extends StatelessWidget {
                     },
                   ),
                   DrawerMenuItem(
-                    icon: Icons.person,
-                    title: 'Profile',
+                    icon: Icons.card_membership,
+                    title: 'Member',
                     selected: ctrl.selectedIndex.value == 3,
                     onTap: () {
                       ctrl.changeMenu(3);
+                      Navigator.pop(context);
+                    },
+                  ),
+                  DrawerMenuItem(
+                    icon: Icons.person,
+                    title: 'Profile',
+                    selected: ctrl.selectedIndex.value == 4,
+                    onTap: () {
+                      ctrl.changeMenu(4);
                       Navigator.pop(context);
                     },
                   ),

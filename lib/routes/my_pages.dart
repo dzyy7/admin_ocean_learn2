@@ -7,6 +7,7 @@ import 'package:admin_ocean_learn2/pages/dashboard/dashboard.dart';
 import 'package:admin_ocean_learn2/pages/home/home_page.dart';
 import 'package:admin_ocean_learn2/pages/intro/intro.dart';
 import 'package:admin_ocean_learn2/pages/login/login_page.dart';
+import 'package:admin_ocean_learn2/pages/member/member_page.dart';
 import 'package:admin_ocean_learn2/pages/payment/payment_page.dart';
 import 'package:admin_ocean_learn2/pages/profile/profile_page.dart';
 import 'package:admin_ocean_learn2/pages/schedule/schedule_page.dart';
@@ -48,6 +49,10 @@ class MyAppPage {
     GetPage(
       name: MyAppRoutes.paymentPage, 
       page: () => PaymentPage(),
+    ),
+    GetPage(
+      name: MyAppRoutes.memberPage, 
+      page: () => MemberPage(),
     ),
     GetPage(
       name: MyAppRoutes.profilePage, 

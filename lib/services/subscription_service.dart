@@ -4,7 +4,7 @@ import 'package:admin_ocean_learn2/model/subscription_model.dart';
 import 'package:admin_ocean_learn2/utils/user_storage.dart';
 
 class SubscriptionService {
-  static const String baseUrl = 'https://ocean-learn-api.rplrus.com/api/v1';
+  static const String baseUrl = 'https://ocean-learn-api.rplrus.com/api/v1/admin';
   
   // Fetch all subscriptions
   static Future<List<SubscriptionModel>> getSubscriptions() async {
