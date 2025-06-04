@@ -1,3 +1,4 @@
+import 'package:admin_ocean_learn2/services/firebase_service.dart';
 import 'package:admin_ocean_learn2/services/login_service.dart';
 import 'package:admin_ocean_learn2/utils/user_storage.dart';
 import 'package:flutter/material.dart';
@@ -70,6 +71,7 @@ class LoginController extends GetxController {
         }
         
         print('Token saved: ${UserStorage.getToken() ?? _sessionToken}');
+        FirebaseService.saveFcmTokenToServer();
         Get.offNamed('/dashboard');
       } else {
         _showErrorDialog('Token not found in response');
