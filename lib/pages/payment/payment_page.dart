@@ -6,7 +6,6 @@ import 'package:get/get.dart';
 import 'package:admin_ocean_learn2/pages/payment/payment_controller.dart';
 import 'package:admin_ocean_learn2/utils/color_palette.dart';
 
-
 class PaymentPage extends StatelessWidget {
   const PaymentPage({super.key});
 
@@ -32,7 +31,7 @@ class PaymentPage extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh, color: pureBlack),
-            onPressed: () => controller.fetchSubscriptions(),
+            onPressed: () => controller.refreshData(), // Updated method call
           ),
         ],
       ),
@@ -58,6 +57,11 @@ class PaymentPage extends StatelessWidget {
               const Icon(Icons.error_outline, color: Colors.red, size: 48),
               const SizedBox(height: 16),
               Text('Error: ${controller.error.value}', style: const TextStyle(color: textColor)),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () => controller.refreshData(), // Updated method call
+                child: const Text('Retry'),
+              ),
             ],
           ),
         );
@@ -85,17 +89,19 @@ class PaymentPage extends StatelessWidget {
               child: SearchAndFilter(controller: controller),
               minHeight: 80,
               maxHeight: 80,
-              
             ),
           ),
         ],
-        body: ListView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: controller.getSubscriptionsForSelectedMonth().length,
-          itemBuilder: (context, index) {
-            final sub = controller.getSubscriptionsForSelectedMonth()[index];
-            return PaymentHistory(subscription: sub, controller: controller);
-          },
+        body: RefreshIndicator(
+          onRefresh: () => controller.refreshData(), // Updated method call
+          child: ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: controller.getSubscriptionsForSelectedMonth().length,
+            itemBuilder: (context, index) {
+              final sub = controller.getSubscriptionsForSelectedMonth()[index];
+              return PaymentHistory(subscription: sub, controller: controller);
+            },
+          ),
         ),
       );
     });

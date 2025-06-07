@@ -1,5 +1,7 @@
 import 'package:admin_ocean_learn2/model/subscription_model.dart';
+import 'package:admin_ocean_learn2/model/member_model.dart';
 import 'package:admin_ocean_learn2/services/subscription_service.dart';
+import 'package:admin_ocean_learn2/services/member_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -11,6 +13,7 @@ class PaymentController extends GetxController {
 
   final subscriptions = <SubscriptionModel>[].obs;
   final subscriptionsByMonth = <String, List<SubscriptionModel>>{}.obs;
+  final members = <MemberModel>[].obs; 
 
   final selectedMonth = ''.obs;
   final months = <String>[].obs;
@@ -18,14 +21,27 @@ class PaymentController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    fetchSubscriptions();
+    fetchData();
   }
 
-  Future<void> fetchSubscriptions() async {
+  Future<void> fetchData() async {
     try {
       isLoading.value = true;
       error.value = '';
 
+      await Future.wait([
+        fetchSubscriptions(),
+        fetchMembers(),
+      ]);
+    } catch (e) {
+      error.value = e.toString();
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> fetchSubscriptions() async {
+    try {
       final allSubscriptions = await SubscriptionService.getSubscriptions();
       subscriptions.value = allSubscriptions;
 
@@ -39,9 +55,63 @@ class PaymentController extends GetxController {
         selectedMonth.value = months.first;
       }
     } catch (e) {
-      error.value = e.toString();
-    } finally {
-      isLoading.value = false;
+      throw Exception('Error fetching subscriptions: $e');
+    }
+  }
+
+  Future<void> fetchMembers() async {
+    try {
+      final response = await MemberService.getMembers();
+      if (response.status) {
+        members.value = response.data;
+      } else {
+        throw Exception('Failed to fetch members: ${response.message}');
+      }
+    } catch (e) {
+      throw Exception('Error fetching members: $e');
+    }
+  }
+
+  String getUsernameFromId(int userId) {
+    try {
+      final member = members.firstWhere(
+        (member) => member.id.personalId == userId,
+      );
+      return member.accountInfo.name;
+    } catch (e) {
+      return 'Unknown User'; 
+    }
+  }
+
+  String getUserEmailFromId(int userId) {
+    try {
+      final member = members.firstWhere(
+        (member) => member.id.personalId == userId,
+      );
+      return member.accountInfo.email;
+    } catch (e) {
+      return 'Unknown Email';
+    }
+  }
+
+  String getUserRoleFromId(int userId) {
+    try {
+      final member = members.firstWhere(
+        (member) => member.id.personalId == userId,
+      );
+      return member.accountInfo.role;
+    } catch (e) {
+      return 'Unknown Role';
+    }
+  }
+
+  MemberModel? getMemberFromId(int userId) {
+    try {
+      return members.firstWhere(
+        (member) => member.id.personalId == userId,
+      );
+    } catch (e) {
+      return null;
     }
   }
 
@@ -82,7 +152,8 @@ class PaymentController extends GetxController {
 
   Future<void> confirmCashPayment(SubscriptionModel subscription) async {
     try {
-      // Show confirmation dialog
+      final username = getUsernameFromId(subscription.userId);
+      
       bool? shouldConfirm = await Get.dialog<bool>(
         AlertDialog(
           title: const Text('Confirm Payment'),
@@ -92,6 +163,7 @@ class PaymentController extends GetxController {
             children: [
               Text('Are you sure you want to confirm this cash payment?'),
               const SizedBox(height: 8),
+              Text('User: $username', style: const TextStyle(fontWeight: FontWeight.bold)),
               Text('User ID: ${subscription.userId}', style: const TextStyle(fontWeight: FontWeight.bold)),
               Text('Amount: Rp ${subscription.detail.amount}', style: const TextStyle(fontWeight: FontWeight.bold)),
               Text('Payment Method: ${subscription.detail.paymentMethod}'),
@@ -126,7 +198,7 @@ class PaymentController extends GetxController {
         );
         
         // Refresh the data
-        await fetchSubscriptions();
+        await fetchData();
       }
     } catch (e) {
       Get.snackbar(
@@ -138,5 +210,9 @@ class PaymentController extends GetxController {
     } finally {
       isConfirming.value = false;
     }
+  }
+
+  Future<void> refreshData() async {
+    await fetchData();
   }
 }
