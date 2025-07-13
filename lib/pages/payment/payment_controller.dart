@@ -1,5 +1,6 @@
 import 'package:admin_ocean_learn2/model/subscription_model.dart';
 import 'package:admin_ocean_learn2/model/member_model.dart';
+import 'package:admin_ocean_learn2/pages/payment/invoice_page.dart';
 import 'package:admin_ocean_learn2/services/subscription_service.dart';
 import 'package:admin_ocean_learn2/services/member_service.dart';
 import 'package:flutter/material.dart';
@@ -127,7 +128,22 @@ class PaymentController extends GetxController {
     return subscriptionsByMonth[selectedMonth.value] ?? [];
   }
 
-  void viewInvoice(String invoiceUrl) async {
+  void viewInvoice(SubscriptionModel subscription) async {
+    // Jika payment method adalah cash, buka halaman invoice baru
+    if (subscription.detail.paymentMethod.toLowerCase() == 'cash') {
+      Get.to(
+        () => InvoicePage(
+          subscription: subscription,
+          controller: this,
+        ),
+        transition: Transition.rightToLeft,
+        duration: const Duration(milliseconds: 300),
+      );
+      return;
+    }
+
+    // Untuk payment method lainnya, buka URL invoice seperti sebelumnya
+    String invoiceUrl = subscription.detail.invoiceUrl;
     if (invoiceUrl.isEmpty || invoiceUrl == "offline payment") {
       Get.snackbar(
         'Info',
@@ -151,67 +167,67 @@ class PaymentController extends GetxController {
   }
 
   Future<void> confirmCashPayment(SubscriptionModel subscription) async {
-    try {
-      final username = getUsernameFromId(subscription.userId);
-      
-      bool? shouldConfirm = await Get.dialog<bool>(
-        AlertDialog(
-          title: const Text('Confirm Payment'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Are you sure you want to confirm this cash payment?'),
-              const SizedBox(height: 8),
-              Text('User: $username', style: const TextStyle(fontWeight: FontWeight.bold)),
-              Text('User ID: ${subscription.userId}', style: const TextStyle(fontWeight: FontWeight.bold)),
-              Text('Amount: Rp ${subscription.detail.amount}', style: const TextStyle(fontWeight: FontWeight.bold)),
-              Text('Payment Method: ${subscription.detail.paymentMethod}'),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Get.back(result: false),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () => Get.back(result: true),
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-              child: const Text('Confirm', style: TextStyle(color: Colors.white)),
-            ),
+  try {
+    final username = getUsernameFromId(subscription.userId);
+
+    bool? shouldConfirm = await Get.dialog<bool>(
+      AlertDialog(
+        title: const Text('Confirm Payment'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Are you sure you want to confirm this ${subscription.detail.paymentMethod} payment?'),
+            const SizedBox(height: 8),
+            Text('Username: $username', style: const TextStyle(fontWeight: FontWeight.bold)),
+            Text('Amount: Rp ${subscription.detail.amount}', style: const TextStyle(fontWeight: FontWeight.bold)),
+            Text('Payment Method: ${subscription.detail.paymentMethod}'),
           ],
         ),
-      );
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(result: false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Get.back(result: true),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+            child: const Text('Confirm', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
 
-      if (shouldConfirm != true) return;
+    if (shouldConfirm != true) return;
 
-      isConfirming.value = true;
+    isConfirming.value = true;
 
-      final success = await SubscriptionService.confirmCashPayment(subscription.uuid);
-      
-      if (success) {
-        Get.snackbar(
-          'Success',
-          'Payment confirmed successfully',
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
-        );
-        
-        // Refresh the data
-        await fetchData();
-      }
-    } catch (e) {
+    final success = await SubscriptionService.confirmCashPayment(
+      subscription.uuid,
+      subscription.detail.paymentMethod,
+    );
+
+    if (success) {
       Get.snackbar(
-        'Error',
-        'Failed to confirm payment: ${e.toString()}',
-        backgroundColor: Colors.red,
+        'Success',
+        'Payment confirmed successfully',
+        backgroundColor: Colors.green,
         colorText: Colors.white,
       );
-    } finally {
-      isConfirming.value = false;
-    }
-  }
 
+      await fetchData();
+    }
+  } catch (e) {
+    Get.snackbar(
+      'Error',
+      'Failed to confirm payment: ${e.toString()}',
+      backgroundColor: Colors.red,
+      colorText: Colors.white,
+    );
+  } finally {
+    isConfirming.value = false;
+  }
+}
   Future<void> refreshData() async {
     await fetchData();
   }

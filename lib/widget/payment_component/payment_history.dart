@@ -121,7 +121,7 @@ class PaymentHistory extends StatelessWidget {
                       onPressed: () =>
                           controller.confirmCashPayment(subscription),
                       icon: const Icon(Icons.check, color: Colors.white),
-                      label: const Text('Confirm Payment',
+                      label: const Text('Confirm',
                           style: TextStyle(color: Colors.white)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green,
@@ -137,7 +137,7 @@ class PaymentHistory extends StatelessWidget {
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: () =>
-                        controller.viewInvoice(subscription.detail.invoiceUrl),
+                        controller.viewInvoice(subscription), // Updated: pass subscription object
                     icon: const Icon(Icons.receipt, color: primaryColor),
                     label: const Text('View Invoice',
                         style: TextStyle(color: primaryColor)),

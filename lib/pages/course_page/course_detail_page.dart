@@ -3,9 +3,7 @@ import 'package:admin_ocean_learn2/pages/course_page/qr_code_page/qr_code_page.d
 import 'package:admin_ocean_learn2/services/course_service.dart';
 import 'package:admin_ocean_learn2/utils/color_palette.dart';
 import 'package:admin_ocean_learn2/widget/course_component/lesson_card.dart';
-import 'package:admin_ocean_learn2/widget/course_component/note_button.dart';
-import 'package:admin_ocean_learn2/widget/course_component/note_input.dart';
-import 'package:admin_ocean_learn2/widget/course_component/note_section.dart';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -122,43 +120,6 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
               child: Column(
                 children: [
                   LessonCard(course: _currentCourse),
-                  const SizedBox(height: 20),
-                  if (_isAdmin)
-                    _isNoteVisible
-                        ? NoteInput(
-                            controller: _noteController,
-                            onSave: () async {
-                              setState(() {
-                                _isLoading = true;
-                              });
-                              
-                              bool success = await widget.lessonService.updateNote(
-                                _currentCourse.id,
-                                _noteController.text,
-                              );
-                              
-                              setState(() {
-                                _isLoading = false;
-                                _isNoteVisible = false;
-                                if (success) {
-                                  _currentCourse.note = _noteController.text;
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text("Note updated successfully"))
-                                  );
-                                } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text("Failed to update note"))
-                                  );
-                                }
-                              });
-                            },
-                            onCancel: () => setState(() => _isNoteVisible = false),
-                          )
-                        : NoteButton(onPressed: () {
-                            setState(() => _isNoteVisible = true);
-                          }),
-                  const SizedBox(height: 16),
-                  NotesSection(course: _currentCourse, isNoteVisible: _isNoteVisible),
                 ],
               ),
             ),

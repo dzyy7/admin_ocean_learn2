@@ -6,7 +6,6 @@ import 'package:admin_ocean_learn2/utils/user_storage.dart';
 class SubscriptionService {
   static const String baseUrl = 'https://ocean-learn-api.rplrus.com/api/v1/admin';
   
-  // Fetch all subscriptions
   static Future<List<SubscriptionModel>> getSubscriptions() async {
     try {
       final token = UserStorage.getToken();
@@ -59,29 +58,32 @@ class SubscriptionService {
     }
   }
 
-  // Confirm cash payment
-  static Future<bool> confirmCashPayment(String externalId) async {
-    try {
-      final token = UserStorage.getToken();
-      if (token == null) {
-        throw Exception('User not authenticated');
-      }
-      
-      final response = await http.post(
-        Uri.parse('$baseUrl/subscription/confirm?external_id=$externalId'),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
-      );
-      
-      if (response.statusCode == 200) {
-        return true;
-      } else {
-        throw Exception('Failed to confirm payment: ${response.statusCode}');
-      }
-    } catch (e) {
-      throw Exception('Error confirming payment: $e');
+  static Future<bool> confirmCashPayment(String externalId, String paymentMethod) async {
+  try {
+    final token = UserStorage.getToken();
+    if (token == null) {
+      throw Exception('User not authenticated');
     }
+
+    final response = await http.post(
+      Uri.parse('$baseUrl/subscription/confirm'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: json.encode({
+        'external_id': externalId,
+        'payment_method': 'cash', // or 'transfer' based on your logic
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      throw Exception('Failed to confirm payment: ${response.statusCode}');
+    }
+  } catch (e) {
+    throw Exception('Error confirming payment: $e');
   }
+}
 }
