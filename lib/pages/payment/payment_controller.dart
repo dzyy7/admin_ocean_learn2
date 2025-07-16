@@ -14,7 +14,7 @@ class PaymentController extends GetxController {
 
   final subscriptions = <SubscriptionModel>[].obs;
   final subscriptionsByMonth = <String, List<SubscriptionModel>>{}.obs;
-  final members = <MemberModel>[].obs; 
+  final members = <MemberModel>[].obs;
 
   final selectedMonth = ''.obs;
   final months = <String>[].obs;
@@ -58,6 +58,7 @@ class PaymentController extends GetxController {
     } catch (e) {
       throw Exception('Error fetching subscriptions: $e');
     }
+    print("Available months: ${months.value}");
   }
 
   Future<void> fetchMembers() async {
@@ -80,7 +81,7 @@ class PaymentController extends GetxController {
       );
       return member.accountInfo.name;
     } catch (e) {
-      return 'Unknown User'; 
+      return 'Unknown User';
     }
   }
 
@@ -128,106 +129,111 @@ class PaymentController extends GetxController {
     return subscriptionsByMonth[selectedMonth.value] ?? [];
   }
 
-  void viewInvoice(SubscriptionModel subscription) async {
-    // Jika payment method adalah cash, buka halaman invoice baru
-    if (subscription.detail.paymentMethod.toLowerCase() == 'cash') {
-      Get.to(
-        () => InvoicePage(
-          subscription: subscription,
-          controller: this,
+  void viewInvoice(SubscriptionModel subscription) {
+  final paymentMethod = subscription.detail.paymentMethod.toLowerCase();
+
+  if (paymentMethod == 'cash' || paymentMethod == 'transfer') {
+    Get.to(
+      () => InvoicePage(
+        subscription: subscription,
+        controller: this,
+      ),
+      transition: Transition.rightToLeft,
+      duration: const Duration(milliseconds: 300),
+    );
+  } else {
+    Get.snackbar(
+      'Info',
+      'Online invoice view is disabled in this version.',
+      backgroundColor: Colors.grey,
+      colorText: Colors.white,
+    );
+  }
+}
+
+
+  Future<void> confirmPayment(SubscriptionModel subscription) async {
+    try {
+      final username = getUsernameFromId(subscription.userId);
+      final paymentMethod = subscription.detail.paymentMethod;
+
+      bool? shouldConfirm = await Get.dialog<bool>(
+        AlertDialog(
+          title: Text('Confirm ${paymentMethod.toUpperCase()} Payment'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                  'Are you sure you want to confirm this ${paymentMethod} payment?'),
+              const SizedBox(height: 8),
+              Text('Username: $username',
+                  style: const TextStyle(fontWeight: FontWeight.bold)),
+              Text('Amount: Rp ${subscription.detail.amount}',
+                  style: const TextStyle(fontWeight: FontWeight.bold)),
+              Text('Payment Method: ${paymentMethod.toUpperCase()}'),
+              if (paymentMethod.toLowerCase() == 'transfer') ...[
+                const SizedBox(height: 8),
+                const Text(
+                    'Note: Please verify the transfer receipt before confirming.',
+                    style: TextStyle(color: Colors.orange, fontSize: 12)),
+              ],
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Get.back(result: false),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () => Get.back(result: true),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+              child:
+                  const Text('Confirm', style: TextStyle(color: Colors.white)),
+            ),
+          ],
         ),
-        transition: Transition.rightToLeft,
-        duration: const Duration(milliseconds: 300),
       );
-      return;
-    }
 
-    // Untuk payment method lainnya, buka URL invoice seperti sebelumnya
-    String invoiceUrl = subscription.detail.invoiceUrl;
-    if (invoiceUrl.isEmpty || invoiceUrl == "offline payment") {
-      Get.snackbar(
-        'Info',
-        'This is an offline payment - no invoice URL available',
-        backgroundColor: Colors.blue,
-        colorText: Colors.white,
+      if (shouldConfirm != true) return;
+
+      isConfirming.value = true;
+
+      final success = await SubscriptionService.confirmPayment(
+        subscription.uuid,
+        paymentMethod.toLowerCase(),
       );
-      return;
-    }
 
-    final Uri url = Uri.parse(invoiceUrl);
-    final success = await launchUrl(url, mode: LaunchMode.externalApplication);
-    if (!success) {
+      if (success) {
+        Get.snackbar(
+          'Success',
+          '${paymentMethod.toUpperCase()} payment confirmed successfully',
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+        );
+
+        await fetchData();
+      }
+    } catch (e) {
       Get.snackbar(
         'Error',
-        'Could not open invoice URL',
+        'Failed to confirm payment: ${e.toString()}',
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );
+    } finally {
+      isConfirming.value = false;
     }
   }
 
   Future<void> confirmCashPayment(SubscriptionModel subscription) async {
-  try {
-    final username = getUsernameFromId(subscription.userId);
-
-    bool? shouldConfirm = await Get.dialog<bool>(
-      AlertDialog(
-        title: const Text('Confirm Payment'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Are you sure you want to confirm this ${subscription.detail.paymentMethod} payment?'),
-            const SizedBox(height: 8),
-            Text('Username: $username', style: const TextStyle(fontWeight: FontWeight.bold)),
-            Text('Amount: Rp ${subscription.detail.amount}', style: const TextStyle(fontWeight: FontWeight.bold)),
-            Text('Payment Method: ${subscription.detail.paymentMethod}'),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(result: false),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () => Get.back(result: true),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-            child: const Text('Confirm', style: TextStyle(color: Colors.white)),
-          ),
-        ],
-      ),
-    );
-
-    if (shouldConfirm != true) return;
-
-    isConfirming.value = true;
-
-    final success = await SubscriptionService.confirmCashPayment(
-      subscription.uuid,
-      subscription.detail.paymentMethod,
-    );
-
-    if (success) {
-      Get.snackbar(
-        'Success',
-        'Payment confirmed successfully',
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
-      );
-
-      await fetchData();
-    }
-  } catch (e) {
-    Get.snackbar(
-      'Error',
-      'Failed to confirm payment: ${e.toString()}',
-      backgroundColor: Colors.red,
-      colorText: Colors.white,
-    );
-  } finally {
-    isConfirming.value = false;
+    await confirmPayment(subscription);
   }
-}
+
+  Future<void> confirmTransferPayment(SubscriptionModel subscription) async {
+    await confirmPayment(subscription);
+  }
+
   Future<void> refreshData() async {
     await fetchData();
   }

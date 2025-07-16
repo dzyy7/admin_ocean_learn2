@@ -19,6 +19,7 @@ class InvoicePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final username = controller.getUsernameFromId(subscription.userId);
     final userEmail = controller.getUserEmailFromId(subscription.userId);
+    final paymentMethod = subscription.detail.paymentMethod.toLowerCase();
 
     return Scaffold(
       backgroundColor: netralColor,
@@ -96,6 +97,13 @@ class InvoicePage extends StatelessWidget {
                             color: primaryColor.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
+                          child: Icon(
+                            paymentMethod == 'cash' 
+                              ? Icons.money 
+                              : Icons.account_balance,
+                            size: 60,
+                            color: primaryColor,
+                          ),
                         ),
                       ),
                     ),
@@ -148,8 +156,7 @@ class InvoicePage extends StatelessWidget {
                             // Cash option
                             Expanded(
                               child: Container(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 12),
+                                padding: const EdgeInsets.symmetric(vertical: 12),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(8),
                                 ),
@@ -160,15 +167,11 @@ class InvoicePage extends StatelessWidget {
                                       height: 20,
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
-                                        color: subscription.detail.paymentMethod
-                                                    .toLowerCase() ==
-                                                'cash'
+                                        color: paymentMethod == 'cash'
                                             ? primaryColor
                                             : Colors.grey.shade300,
                                       ),
-                                      child: subscription.detail.paymentMethod
-                                                  .toLowerCase() ==
-                                              'cash'
+                                      child: paymentMethod == 'cash'
                                           ? const Icon(Icons.check,
                                               color: pureWhite, size: 14)
                                           : null,
@@ -190,8 +193,7 @@ class InvoicePage extends StatelessWidget {
                             // Transfer option
                             Expanded(
                               child: Container(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 12),
+                                padding: const EdgeInsets.symmetric(vertical: 12),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(8),
                                 ),
@@ -202,15 +204,11 @@ class InvoicePage extends StatelessWidget {
                                       height: 20,
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
-                                        color: subscription.detail.paymentMethod
-                                                    .toLowerCase() ==
-                                                'transfer'
+                                        color: paymentMethod == 'transfer'
                                             ? primaryColor
                                             : Colors.grey.shade300,
                                       ),
-                                      child: subscription.detail.paymentMethod
-                                                  .toLowerCase() ==
-                                              'transfer'
+                                      child: paymentMethod == 'transfer'
                                           ? const Icon(Icons.check,
                                               color: pureWhite, size: 14)
                                           : null,
@@ -234,6 +232,46 @@ class InvoicePage extends StatelessWidget {
                     ),
                   ),
 
+                  // Additional info for transfer payments
+                  if (paymentMethod == 'transfer')
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(20),
+                      margin: const EdgeInsets.only(bottom: 16),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.shade50,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.blue.shade200),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(Icons.info_outline, color: Colors.blue.shade600, size: 20),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Transfer Payment Info',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.blue.shade800,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            'Please verify the transfer receipt and bank transaction details before confirming this payment.',
+                            style: GoogleFonts.poppins(
+                              fontSize: 14,
+                              color: Colors.blue.shade700,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
@@ -246,12 +284,12 @@ class InvoicePage extends StatelessWidget {
                           borderRadius: BorderRadius.circular(18),
                           side: BorderSide(
                             color: primaryColor, 
-                            width: 1, // Ketebalan garis
+                            width: 1,
                           ),
                         ),
                         elevation: 0,
                       ),
-                      child:  Text(
+                      child: Text(
                         'Thank You!',
                         style: GoogleFonts.poppins(
                           fontSize: 16,

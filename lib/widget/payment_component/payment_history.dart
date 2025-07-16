@@ -18,6 +18,7 @@ class PaymentHistory extends StatelessWidget {
     final username = controller.getUsernameFromId(subscription.userId);
     final userEmail = controller.getUserEmailFromId(subscription.userId);
     final userRole = controller.getUserRoleFromId(subscription.userId);
+    final paymentMethod = subscription.detail.paymentMethod.toLowerCase();
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -51,13 +52,11 @@ class PaymentHistory extends StatelessWidget {
                           color: Colors.grey,
                         ),
                       ),
-                      
                     ],
                   ),
                 ),
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
                     color: _getStatusColor(subscription.status),
                     borderRadius: BorderRadius.circular(12),
@@ -88,7 +87,7 @@ class PaymentHistory extends StatelessWidget {
                   child: _buildDetailItem(
                     'Method',
                     subscription.detail.paymentMethod,
-                    Icons.payment,
+                    _getPaymentMethodIcon(paymentMethod),
                   ),
                 ),
               ],
@@ -105,7 +104,6 @@ class PaymentHistory extends StatelessWidget {
                     Icons.calendar_today,
                   ),
                 ),
-                
               ],
             ),
 
@@ -114,33 +112,40 @@ class PaymentHistory extends StatelessWidget {
             // Action buttons
             Row(
               children: [
-                if (subscription.detail.paymentMethod == 'cash' &&
+                // Show confirm button for cash and transfer if status is pending
+                if ((paymentMethod == 'cash' || paymentMethod == 'transfer') &&
                     subscription.status.toLowerCase() == 'pending')
                   Expanded(
                     child: ElevatedButton.icon(
-                      onPressed: () =>
-                          controller.confirmCashPayment(subscription),
+                      onPressed: () => controller.confirmPayment(subscription),
                       icon: const Icon(Icons.check, color: Colors.white),
-                      label: const Text('Confirm',
-                          style: TextStyle(color: Colors.white)),
+                      label: Text(
+                        'Confirm ${paymentMethod.toUpperCase()}',
+                        style: const TextStyle(color: Colors.white),
+                      ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
+                        backgroundColor: paymentMethod == 'cash' 
+                          ? Colors.green 
+                          : Colors.blue,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
                     ),
                   ),
-                if (subscription.detail.paymentMethod == 'cash' &&
+                
+                if ((paymentMethod == 'cash' || paymentMethod == 'transfer') &&
                     subscription.status.toLowerCase() == 'pending')
                   const SizedBox(width: 8),
+                
                 Expanded(
                   child: OutlinedButton.icon(
-                    onPressed: () =>
-                        controller.viewInvoice(subscription), // Updated: pass subscription object
+                    onPressed: () => controller.viewInvoice(subscription),
                     icon: const Icon(Icons.receipt, color: primaryColor),
-                    label: const Text('View Invoice',
-                        style: TextStyle(color: primaryColor)),
+                    label: const Text(
+                      'View Invoice',
+                      style: TextStyle(color: primaryColor),
+                    ),
                     style: OutlinedButton.styleFrom(
                       side: const BorderSide(color: primaryColor),
                       shape: RoundedRectangleBorder(
@@ -196,6 +201,17 @@ class PaymentHistory extends StatelessWidget {
         return Colors.red;
       default:
         return Colors.grey;
+    }
+  }
+
+  IconData _getPaymentMethodIcon(String paymentMethod) {
+    switch (paymentMethod) {
+      case 'cash':
+        return Icons.money;
+      case 'transfer':
+        return Icons.account_balance;
+      default:
+        return Icons.payment;
     }
   }
 }
