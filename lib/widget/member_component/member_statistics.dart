@@ -49,10 +49,10 @@ class MemberStatistics extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: _buildStatCard(
-                  'Premium',
-                  controller.premiumMembers.value.toString(),
-                  Icons.star,
-                  Colors.amber,
+                  'Admins',
+                  controller.adminMembers.value.toString(),
+                  Icons.admin_panel_settings,
+                  Colors.red,
                 ),
               ),
             ],
@@ -62,21 +62,12 @@ class MemberStatistics extends StatelessWidget {
             children: [
               Expanded(
                 child: _buildStatCard(
-                  'Free Users',
-                  controller.freeMembers.value.toString(),
-                  Icons.person,
-                  Colors.grey,
+                  'Premium',
+                  controller.premiumMembers.value.toString(),
+                  Icons.star,
+                  Colors.amber,
                 ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildStatCard(
-                  'Admins',
-                  controller.adminMembers.value.toString(),
-                  Icons.admin_panel_settings,
-                  Colors.red,
-                ),
-              ),
+              ),              
             ],
           )),
         ],

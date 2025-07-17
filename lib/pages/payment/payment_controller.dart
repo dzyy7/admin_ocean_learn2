@@ -1,8 +1,13 @@
 import 'package:admin_ocean_learn2/model/subscription_model.dart';
+import 'package:admin_ocean_learn2/model/member_model.dart';
+import 'package:admin_ocean_learn2/pages/payment/invoice_page.dart';
 import 'package:admin_ocean_learn2/services/subscription_service.dart';
+import 'package:admin_ocean_learn2/services/member_service.dart';
+import 'package:admin_ocean_learn2/utils/color_palette.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class PaymentController extends GetxController {
   final isLoading = true.obs;
@@ -11,6 +16,7 @@ class PaymentController extends GetxController {
 
   final subscriptions = <SubscriptionModel>[].obs;
   final subscriptionsByMonth = <String, List<SubscriptionModel>>{}.obs;
+  final members = <MemberModel>[].obs;
 
   final selectedMonth = ''.obs;
   final months = <String>[].obs;
@@ -18,14 +24,27 @@ class PaymentController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    fetchSubscriptions();
+    fetchData();
   }
 
-  Future<void> fetchSubscriptions() async {
+  Future<void> fetchData() async {
     try {
       isLoading.value = true;
       error.value = '';
 
+      await Future.wait([
+        fetchSubscriptions(),
+        fetchMembers(),
+      ]);
+    } catch (e) {
+      error.value = e.toString();
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> fetchSubscriptions() async {
+    try {
       final allSubscriptions = await SubscriptionService.getSubscriptions();
       subscriptions.value = allSubscriptions;
 
@@ -39,9 +58,64 @@ class PaymentController extends GetxController {
         selectedMonth.value = months.first;
       }
     } catch (e) {
-      error.value = e.toString();
-    } finally {
-      isLoading.value = false;
+      throw Exception('Error fetching subscriptions: $e');
+    }
+    print("Available months: ${months.value}");
+  }
+
+  Future<void> fetchMembers() async {
+    try {
+      final response = await MemberService.getMembers();
+      if (response.status) {
+        members.value = response.data;
+      } else {
+        throw Exception('Failed to fetch members: ${response.message}');
+      }
+    } catch (e) {
+      throw Exception('Error fetching members: $e');
+    }
+  }
+
+  String getUsernameFromId(int userId) {
+    try {
+      final member = members.firstWhere(
+        (member) => member.id.personalId == userId,
+      );
+      return member.accountInfo.name;
+    } catch (e) {
+      return 'Unknown User';
+    }
+  }
+
+  String getUserEmailFromId(int userId) {
+    try {
+      final member = members.firstWhere(
+        (member) => member.id.personalId == userId,
+      );
+      return member.accountInfo.email;
+    } catch (e) {
+      return 'Unknown Email';
+    }
+  }
+
+  String getUserRoleFromId(int userId) {
+    try {
+      final member = members.firstWhere(
+        (member) => member.id.personalId == userId,
+      );
+      return member.accountInfo.role;
+    } catch (e) {
+      return 'Unknown Role';
+    }
+  }
+
+  MemberModel? getMemberFromId(int userId) {
+    try {
+      return members.firstWhere(
+        (member) => member.id.personalId == userId,
+      );
+    } catch (e) {
+      return null;
     }
   }
 
@@ -57,44 +131,96 @@ class PaymentController extends GetxController {
     return subscriptionsByMonth[selectedMonth.value] ?? [];
   }
 
-  void viewInvoice(String invoiceUrl) async {
-    if (invoiceUrl.isEmpty || invoiceUrl == "offline payment") {
+  void viewInvoice(SubscriptionModel subscription) {
+    final paymentMethod = subscription.detail.paymentMethod.toLowerCase();
+
+    if (paymentMethod == 'cash' || paymentMethod == 'transfer') {
+      Get.to(
+        () => InvoicePage(
+          subscription: subscription,
+          controller: this,
+        ),
+        transition: Transition.rightToLeft,
+        duration: const Duration(milliseconds: 300),
+      );
+    } else {
       Get.snackbar(
         'Info',
-        'This is an offline payment - no invoice URL available',
-        backgroundColor: Colors.blue,
-        colorText: Colors.white,
-      );
-      return;
-    }
-
-    final Uri url = Uri.parse(invoiceUrl);
-    final success = await launchUrl(url, mode: LaunchMode.externalApplication);
-    if (!success) {
-      Get.snackbar(
-        'Error',
-        'Could not open invoice URL',
-        backgroundColor: Colors.red,
+        'Online invoice view is disabled in this version.',
+        backgroundColor: Colors.grey,
         colorText: Colors.white,
       );
     }
   }
 
-  Future<void> confirmCashPayment(SubscriptionModel subscription) async {
+  void showFullScreenImage(BuildContext context, String imageUrl) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.black,
+          child: Stack(
+            children: [
+              Center(
+                child: InteractiveViewer(
+                  minScale: 0.5,
+                  maxScale: 3.0,
+                  child: CachedNetworkImage(
+                    imageUrl: imageUrl,
+                    httpHeaders: SubscriptionService.getImageHeaders(),
+                    placeholder: (context, url) => const Center(
+                      child: CircularProgressIndicator(
+                        color: primaryColor,
+                      ),
+                    ),
+                    errorWidget: (context, url, error) => const Center(
+                      child: Icon(Icons.error_outline, 
+                          color: Colors.white, size: 48),
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                top: 40,
+                right: 20,
+                child: IconButton(
+                  icon: const Icon(Icons.close, color: Colors.white, size: 30),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> confirmPayment(SubscriptionModel subscription) async {
     try {
-      // Show confirmation dialog
+      final username = getUsernameFromId(subscription.userId);
+      final paymentMethod = subscription.detail.paymentMethod;
+
       bool? shouldConfirm = await Get.dialog<bool>(
         AlertDialog(
-          title: const Text('Confirm Payment'),
+          title: Text('Confirm ${paymentMethod.toUpperCase()} Payment'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Are you sure you want to confirm this cash payment?'),
+              Text(
+                  'Are you sure you want to confirm this ${paymentMethod} payment?'),
               const SizedBox(height: 8),
-              Text('User ID: ${subscription.userId}', style: const TextStyle(fontWeight: FontWeight.bold)),
-              Text('Amount: Rp ${subscription.detail.amount}', style: const TextStyle(fontWeight: FontWeight.bold)),
-              Text('Payment Method: ${subscription.detail.paymentMethod}'),
+              Text('Username: $username',
+                  style: const TextStyle(fontWeight: FontWeight.bold)),
+              Text('Amount: Rp ${subscription.detail.amount}',
+                  style: const TextStyle(fontWeight: FontWeight.bold)),
+              Text('Payment Method: ${paymentMethod.toUpperCase()}'),
+              if (paymentMethod.toLowerCase() == 'transfer') ...[
+                const SizedBox(height: 8),
+                const Text(
+                    'Note: Please verify the transfer receipt before confirming.',
+                    style: TextStyle(color: Colors.orange, fontSize: 12)),
+              ],
             ],
           ),
           actions: [
@@ -105,7 +231,8 @@ class PaymentController extends GetxController {
             ElevatedButton(
               onPressed: () => Get.back(result: true),
               style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-              child: const Text('Confirm', style: TextStyle(color: Colors.white)),
+              child:
+                  const Text('Confirm', style: TextStyle(color: Colors.white)),
             ),
           ],
         ),
@@ -115,18 +242,20 @@ class PaymentController extends GetxController {
 
       isConfirming.value = true;
 
-      final success = await SubscriptionService.confirmCashPayment(subscription.uuid);
-      
+      final success = await SubscriptionService.confirmPayment(
+        subscription.uuid,
+        paymentMethod.toLowerCase(),
+      );
+
       if (success) {
         Get.snackbar(
           'Success',
-          'Payment confirmed successfully',
+          '${paymentMethod.toUpperCase()} payment confirmed successfully',
           backgroundColor: Colors.green,
           colorText: Colors.white,
         );
-        
-        // Refresh the data
-        await fetchSubscriptions();
+
+        await fetchData();
       }
     } catch (e) {
       Get.snackbar(
@@ -138,5 +267,17 @@ class PaymentController extends GetxController {
     } finally {
       isConfirming.value = false;
     }
+  }
+
+  Future<void> confirmCashPayment(SubscriptionModel subscription) async {
+    await confirmPayment(subscription);
+  }
+
+  Future<void> confirmTransferPayment(SubscriptionModel subscription) async {
+    await confirmPayment(subscription);
+  }
+
+  Future<void> refreshData() async {
+    await fetchData();
   }
 }

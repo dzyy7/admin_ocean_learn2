@@ -6,7 +6,6 @@ import 'package:get/get.dart';
 import 'package:admin_ocean_learn2/pages/payment/payment_controller.dart';
 import 'package:admin_ocean_learn2/utils/color_palette.dart';
 
-
 class PaymentPage extends StatelessWidget {
   const PaymentPage({super.key});
 
@@ -32,7 +31,7 @@ class PaymentPage extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh, color: pureBlack),
-            onPressed: () => controller.fetchSubscriptions(),
+            onPressed: () => controller.refreshData(), // Updated method call
           ),
         ],
       ),
@@ -47,7 +46,8 @@ class PaymentPage extends StatelessWidget {
   Widget _buildPaymentPageContent(PaymentController controller) {
     return Obx(() {
       if (controller.isLoading.value) {
-        return const Center(child: CircularProgressIndicator(color: primaryColor));
+        return const Center(
+            child: CircularProgressIndicator(color: primaryColor));
       }
 
       if (controller.error.isNotEmpty) {
@@ -57,7 +57,14 @@ class PaymentPage extends StatelessWidget {
             children: [
               const Icon(Icons.error_outline, color: Colors.red, size: 48),
               const SizedBox(height: 16),
-              Text('Error: ${controller.error.value}', style: const TextStyle(color: textColor)),
+              Text('Error: ${controller.error.value}',
+                  style: const TextStyle(color: textColor)),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () =>
+                    controller.refreshData(), // Updated method call
+                child: const Text('Retry'),
+              ),
             ],
           ),
         );
@@ -70,7 +77,8 @@ class PaymentPage extends StatelessWidget {
             children: [
               Icon(Icons.folder_outlined, color: primaryColor, size: 48),
               SizedBox(height: 16),
-              Text('No payment records found', style: TextStyle(color: textColor, fontSize: 16)),
+              Text('No payment records found',
+                  style: TextStyle(color: textColor, fontSize: 16)),
             ],
           ),
         );
@@ -85,17 +93,40 @@ class PaymentPage extends StatelessWidget {
               child: SearchAndFilter(controller: controller),
               minHeight: 80,
               maxHeight: 80,
-              
             ),
           ),
         ],
-        body: ListView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: controller.getSubscriptionsForSelectedMonth().length,
-          itemBuilder: (context, index) {
-            final sub = controller.getSubscriptionsForSelectedMonth()[index];
-            return PaymentHistory(subscription: sub, controller: controller);
-          },
+        body: RefreshIndicator(
+          onRefresh: () => controller.refreshData(), // Updated method call
+          child: ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: controller.getSubscriptionsForSelectedMonth().length,
+            itemBuilder: (context, index) {
+              final sortedSubscriptions =
+                  controller.getSubscriptionsForSelectedMonth()
+                    ..sort((a, b) {
+                      int getStatusPriority(String status) {
+                        switch (status.toLowerCase()) {
+                          case 'pending':
+                            return 0;
+                          case 'paid':
+                            return 1;
+                          case 'failed':
+                          case 'canceled':
+                            return 2;
+                          default:
+                            return 3;
+                        }
+                      }
+
+                      return getStatusPriority(a.status)
+                          .compareTo(getStatusPriority(b.status));
+                    });
+
+              final sub = sortedSubscriptions[index];
+              return PaymentHistory(subscription: sub, controller: controller);
+            },
+          ),
         ),
       );
     });
@@ -107,7 +138,8 @@ class _StickyHeaderDelegate extends SliverPersistentHeaderDelegate {
   final double minHeight;
   final double maxHeight;
 
-  _StickyHeaderDelegate({required this.child, required this.minHeight, required this.maxHeight});
+  _StickyHeaderDelegate(
+      {required this.child, required this.minHeight, required this.maxHeight});
 
   @override
   double get minExtent => minHeight;
@@ -116,12 +148,15 @@ class _StickyHeaderDelegate extends SliverPersistentHeaderDelegate {
   double get maxExtent => maxHeight;
 
   @override
-  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
     return SizedBox.expand(child: child);
   }
 
   @override
   bool shouldRebuild(_StickyHeaderDelegate old) {
-    return maxHeight != old.maxHeight || minHeight != old.minHeight || child != old.child;
+    return maxHeight != old.maxHeight ||
+        minHeight != old.minHeight ||
+        child != old.child;
   }
 }

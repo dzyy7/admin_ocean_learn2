@@ -29,7 +29,7 @@ class LoginService {
   static Future<Map<String, dynamic>> logout(String token) async {
     try {
       final response = await http.post(
-        Uri.parse('https://ocean-learn-api.rplrus.com/api/v1/user/logout'),
+        Uri.parse('https://ocean-learn-api.rplrus.com/api/v1/admin/logout'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',

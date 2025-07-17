@@ -29,7 +29,8 @@ class SearchAndFilter extends StatelessWidget {
                   return Container(
                     margin: const EdgeInsets.only(right: 8),
                     child: ChoiceChip(
-                      label: Text(month),
+                      label: Text(formatMonthLabel(month)),
+
                       selected: isSelected,
                       selectedColor: primaryColor,
                       backgroundColor: secondaryColor,
@@ -50,6 +51,24 @@ class SearchAndFilter extends StatelessWidget {
           ),
         ],
       ),
+      
     );
   }
-}
+  
+  String formatMonthLabel(String key) {
+    final parts = key.split('-');
+    if (parts.length != 2) return key;
+
+    final year = parts[0];
+    final month = int.tryParse(parts[1]) ?? 0;
+
+    const monthNames = [
+      '', // index 0 dummy
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+
+    final monthName =
+        (month >= 1 && month <= 12) ? monthNames[month] : 'Unknown';
+    return '$monthName $year';
+  }}

@@ -25,25 +25,26 @@ class MemberController extends GetxController {
   }
 
   Future<void> fetchMembers() async {
-    try {
-      isLoading.value = true;
-      error.value = '';
+  try {
+    isLoading.value = true;
+    error.value = '';
 
-      final response = await MemberService.getMembers();
-      
-      if (response.status) {
-        members.value = response.data;
-        updateFilteredMembers();
-        updateStatistics();
-      } else {
-        error.value = response.message;
-      }
-    } catch (e) {
-      error.value = e.toString();
-    } finally {
-      isLoading.value = false;
+    final response = await MemberService.getMembers();
+
+    if (response.status) {
+      final premiumOnly = response.data.where((m) => m.accountInfo.subscription.status.toLowerCase() == 'premium').toList();
+      members.value = premiumOnly;
+      updateFilteredMembers();
+      updateStatistics();
+    } else {
+      error.value = response.message;
     }
+  } catch (e) {
+    error.value = e.toString();
+  } finally {
+    isLoading.value = false;
   }
+}
 
   void updateSearchQuery(String query) {
     searchQuery.value = query;
