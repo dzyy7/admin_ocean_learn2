@@ -3,9 +3,11 @@ import 'package:admin_ocean_learn2/model/member_model.dart';
 import 'package:admin_ocean_learn2/pages/payment/invoice_page.dart';
 import 'package:admin_ocean_learn2/services/subscription_service.dart';
 import 'package:admin_ocean_learn2/services/member_service.dart';
+import 'package:admin_ocean_learn2/utils/color_palette.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class PaymentController extends GetxController {
   final isLoading = true.obs;
@@ -130,27 +132,68 @@ class PaymentController extends GetxController {
   }
 
   void viewInvoice(SubscriptionModel subscription) {
-  final paymentMethod = subscription.detail.paymentMethod.toLowerCase();
+    final paymentMethod = subscription.detail.paymentMethod.toLowerCase();
 
-  if (paymentMethod == 'cash' || paymentMethod == 'transfer') {
-    Get.to(
-      () => InvoicePage(
-        subscription: subscription,
-        controller: this,
-      ),
-      transition: Transition.rightToLeft,
-      duration: const Duration(milliseconds: 300),
-    );
-  } else {
-    Get.snackbar(
-      'Info',
-      'Online invoice view is disabled in this version.',
-      backgroundColor: Colors.grey,
-      colorText: Colors.white,
+    if (paymentMethod == 'cash' || paymentMethod == 'transfer') {
+      Get.to(
+        () => InvoicePage(
+          subscription: subscription,
+          controller: this,
+        ),
+        transition: Transition.rightToLeft,
+        duration: const Duration(milliseconds: 300),
+      );
+    } else {
+      Get.snackbar(
+        'Info',
+        'Online invoice view is disabled in this version.',
+        backgroundColor: Colors.grey,
+        colorText: Colors.white,
+      );
+    }
+  }
+
+  void showFullScreenImage(BuildContext context, String imageUrl) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.black,
+          child: Stack(
+            children: [
+              Center(
+                child: InteractiveViewer(
+                  minScale: 0.5,
+                  maxScale: 3.0,
+                  child: CachedNetworkImage(
+                    imageUrl: imageUrl,
+                    httpHeaders: SubscriptionService.getImageHeaders(),
+                    placeholder: (context, url) => const Center(
+                      child: CircularProgressIndicator(
+                        color: primaryColor,
+                      ),
+                    ),
+                    errorWidget: (context, url, error) => const Center(
+                      child: Icon(Icons.error_outline, 
+                          color: Colors.white, size: 48),
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                top: 40,
+                right: 20,
+                child: IconButton(
+                  icon: const Icon(Icons.close, color: Colors.white, size: 30),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
-}
-
 
   Future<void> confirmPayment(SubscriptionModel subscription) async {
     try {

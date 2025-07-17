@@ -1,3 +1,5 @@
+import 'package:admin_ocean_learn2/services/subscription_service.dart';
+
 class SubscriptionModel {
   final int id;
   final int userId;
@@ -40,12 +42,14 @@ class SubscriptionDetail {
   final String paymentMethod;
   final String paidAt;
   final String invoiceUrl;
+  final String? proof;
 
   SubscriptionDetail({
     required this.amount,
     required this.paymentMethod,
     required this.paidAt,
     required this.invoiceUrl,
+    this.proof,
   });
 
   factory SubscriptionDetail.fromJson(Map<String, dynamic> json) {
@@ -54,6 +58,8 @@ class SubscriptionDetail {
       paymentMethod: json['payment_method'] ?? '',
       paidAt: json['paid_at'] ?? '',
       invoiceUrl: json['invoice_url'] ?? '',
+      proof: json['proof'],
     );
   }
+
 }

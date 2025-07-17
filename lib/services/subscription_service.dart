@@ -5,20 +5,37 @@ import 'package:admin_ocean_learn2/utils/user_storage.dart';
 
 class SubscriptionService {
   static const String baseUrl = 'https://ocean-learn-api.rplrus.com/api/v1/admin';
+  static const String apiBaseUrl = 'https://ocean-learn-api.rplrus.com/api/v1';
+  
+  // Helper method to get headers with authorization
+  static Map<String, String> _getAuthHeaders() {
+    final token = UserStorage.getToken();
+    if (token == null) {
+      throw Exception('User not authenticated');
+    }
+    
+    return {
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'application/json',
+    };
+  }
+  
+  static Map<String, String> _getImageHeaders() {
+    final token = UserStorage.getToken();
+    if (token == null) {
+      throw Exception('User not authenticated');
+    }
+    
+    return {
+      'Authorization': 'Bearer $token',
+    };
+  }
   
   static Future<List<SubscriptionModel>> getSubscriptions() async {
     try {
-      final token = UserStorage.getToken();
-      if (token == null) {
-        throw Exception('User not authenticated');
-      }
-      
       final response = await http.get(
         Uri.parse('$baseUrl/subscription/index'),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
+        headers: _getAuthHeaders(),
       );
       
       if (response.statusCode == 200) {
@@ -33,69 +50,60 @@ class SubscriptionService {
   }
   
   static Future<Map<String, List<SubscriptionModel>>> getSubscriptionsByMonth() async {
-  try {
-    final subscriptions = await getSubscriptions();
-    final Map<String, List<SubscriptionModel>> result = {};
+    try {
+      final subscriptions = await getSubscriptions();
+      final Map<String, List<SubscriptionModel>> result = {};
 
-    for (var subscription in subscriptions) {
-      final monthNumber = _monthNameToNumber(subscription.month);
-      final key = '${subscription.year}-${monthNumber.toString().padLeft(2, '0')}';
+      for (var subscription in subscriptions) {
+        final monthNumber = _monthNameToNumber(subscription.month);
+        final key = '${subscription.year}-${monthNumber.toString().padLeft(2, '0')}';
 
-      if (!result.containsKey(key)) {
-        result[key] = [];
+        if (!result.containsKey(key)) {
+          result[key] = [];
+        }
+        result[key]!.add(subscription);
       }
-      result[key]!.add(subscription);
+
+      final sortedKeys = result.keys.toList()..sort((a, b) => b.compareTo(a));
+
+      final sortedResult = <String, List<SubscriptionModel>>{};
+      for (var key in sortedKeys) {
+        sortedResult[key] = result[key]!;
+      }
+
+      return sortedResult;
+    } catch (e) {
+      throw Exception('Error grouping subscriptions: $e');
     }
-
-    final sortedKeys = result.keys.toList()..sort((a, b) => b.compareTo(a));
-
-    final sortedResult = <String, List<SubscriptionModel>>{};
-    for (var key in sortedKeys) {
-      sortedResult[key] = result[key]!;
-    }
-
-    return sortedResult;
-  } catch (e) {
-    throw Exception('Error grouping subscriptions: $e');
   }
-}
 
-static int _monthNameToNumber(String monthName) {
-  const months = {
-    'January': 1,
-    'February': 2,
-    'March': 3,
-    'April': 4,
-    'May': 5,
-    'June': 6,
-    'July': 7,
-    'August': 8,
-    'September': 9,
-    'October': 10,
-    'November': 11,
-    'December': 12,
-  };
+  static int _monthNameToNumber(String monthName) {
+    const months = {
+      'January': 1,
+      'February': 2,
+      'March': 3,
+      'April': 4,
+      'May': 5,
+      'June': 6,
+      'July': 7,
+      'August': 8,
+      'September': 9,
+      'October': 10,
+      'November': 11,
+      'December': 12,
+    };
 
-  return months[monthName] ?? 0;
-}
+    return months[monthName] ?? 0;
+  }
 
-  // Updated method to handle both cash and transfer payments
   static Future<bool> confirmPayment(String externalId, String paymentMethod) async {
     try {
-      final token = UserStorage.getToken();
-      if (token == null) {
-        throw Exception('User not authenticated');
-      }
-
       final response = await http.post(
         Uri.parse('$baseUrl/subscription/confirm'),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
+        headers: _getAuthHeaders(),
         body: json.encode({
           'external_id': externalId,
-          'payment_method': paymentMethod, // 'cash' or 'transfer'
+          'payment_method': paymentMethod, 
         }),
       );
 
@@ -109,13 +117,47 @@ static int _monthNameToNumber(String monthName) {
     }
   }
 
-  // Backward compatibility - redirect to confirmPayment
   static Future<bool> confirmCashPayment(String externalId, String paymentMethod) async {
     return await confirmPayment(externalId, 'cash');
   }
 
-  // New method for transfer confirmation
   static Future<bool> confirmTransferPayment(String externalId) async {
     return await confirmPayment(externalId, 'transfer');
+  }
+
+  static Future<http.Response> getProofImage(String proofPath) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$apiBaseUrl/$proofPath'),
+        headers: _getImageHeaders(),
+      );
+      
+      if (response.statusCode == 200) {
+        return response;
+      } else {
+        throw Exception('Failed to load proof image: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error fetching proof image: $e');
+    }
+  }
+
+  static String getProofUrl(String proofPath) {
+    return '$apiBaseUrl/$proofPath';
+  }
+
+  static Map<String, String> getImageHeaders() {
+    return _getImageHeaders();
+  }
+
+  static bool hasProof(String? proofPath) {
+    return proofPath != null && proofPath.isNotEmpty;
+  }
+
+  static String? getProofUrlFromSubscription(SubscriptionModel subscription) {
+    if (subscription.detail.proof == null || subscription.detail.proof!.isEmpty) {
+      return null;
+    }
+    return getProofUrl(subscription.detail.proof!);
   }
 }

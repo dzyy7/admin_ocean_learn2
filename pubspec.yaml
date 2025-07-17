@@ -48,7 +48,7 @@ dependencies:
   firebase_core: any
   firebase_messaging: any
   flutter_local_notifications: any
-
+  cached_network_image: ^3.4.1
 
 dev_dependencies:
   flutter_test:

@@ -1,5 +1,10 @@
+import 'package:admin_ocean_learn2/widget/payment_component/invoice_component/invoice_header.dart';
+import 'package:admin_ocean_learn2/widget/payment_component/invoice_component/invoice_illustration.dart';
+import 'package:admin_ocean_learn2/widget/payment_component/invoice_component/payment_method_selector.dart';
+import 'package:admin_ocean_learn2/widget/payment_component/invoice_component/subscription_detail.dart';
+import 'package:admin_ocean_learn2/widget/payment_component/invoice_component/thank_button.dart';
+import 'package:admin_ocean_learn2/widget/payment_component/invoice_component/transfer_proof.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:admin_ocean_learn2/model/subscription_model.dart';
 import 'package:admin_ocean_learn2/pages/payment/payment_controller.dart';
 import 'package:admin_ocean_learn2/utils/color_palette.dart';
@@ -17,10 +22,6 @@ class InvoicePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final username = controller.getUsernameFromId(subscription.userId);
-    final userEmail = controller.getUserEmailFromId(subscription.userId);
-    final paymentMethod = subscription.detail.paymentMethod.toLowerCase();
-
     return Scaffold(
       backgroundColor: netralColor,
       appBar: AppBar(
@@ -56,247 +57,24 @@ class InvoicePage extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Premium For ',
-                        style: GoogleFonts.montserrat(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: textColor,
-                        ),
-                      ),
-                      Text(
-                        '${subscription.month}!',
-                        style: GoogleFonts.montserrat(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: primaryColor,
-                        ),
-                      ),
-                    ],
-                  ),
-
+                  InvoiceHeader(subscription: subscription),
                   const SizedBox(height: 32),
-
-                  // Illustration
-                  Container(
-                    height: 200,
-                    width: double.infinity,
-                    child: Center(
-                      child: SvgPicture.asset(
-                        'assets/svg/invoice.svg',
-                        height: 150,
-                        width: 150,
-                        // If SVG doesn't exist, show a placeholder
-                        placeholderBuilder: (context) => Container(
-                          height: 120,
-                          width: 120,
-                          decoration: BoxDecoration(
-                            color: primaryColor.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Icon(
-                            paymentMethod == 'cash' 
-                              ? Icons.money 
-                              : Icons.account_balance,
-                            size: 60,
-                            color: primaryColor,
-                          ),
-                        ),
-                      ),
-                    ),
+                  InvoiceIllustration(
+                    paymentMethod: subscription.detail.paymentMethod,
                   ),
-
-                  const SizedBox(height: 32),
-
-                  // Detail Subscription Data
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Detail Subscription Data',
-                          style: GoogleFonts.poppins(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: textColor,
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        _buildDetailRow('Username', username),
-                        _buildDetailRow('Email', userEmail),
-                        _buildDetailRow('Amount', subscription.detail.amount),
-                        _buildDetailRow('Status', subscription.status),
-                        _buildDetailRow('Paid At', subscription.detail.paidAt),
-                      ],
-                    ),
+                  SubscriptionDetails(
+                    subscription: subscription,
+                    controller: controller,
                   ),
-
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Payment Method',
-                          style: GoogleFonts.poppins(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: textColor,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        Row(
-                          children: [
-                            // Cash option
-                            Expanded(
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(vertical: 12),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Container(
-                                      width: 20,
-                                      height: 20,
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: paymentMethod == 'cash'
-                                            ? primaryColor
-                                            : Colors.grey.shade300,
-                                      ),
-                                      child: paymentMethod == 'cash'
-                                          ? const Icon(Icons.check,
-                                              color: pureWhite, size: 14)
-                                          : null,
-                                    ),
-                                    const SizedBox(width: 12),
-                                    Text(
-                                      'Cash',
-                                      style: GoogleFonts.poppins(
-                                        fontSize: 16,
-                                        color: textColor,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-
-                            // Transfer option
-                            Expanded(
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(vertical: 12),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Container(
-                                      width: 20,
-                                      height: 20,
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: paymentMethod == 'transfer'
-                                            ? primaryColor
-                                            : Colors.grey.shade300,
-                                      ),
-                                      child: paymentMethod == 'transfer'
-                                          ? const Icon(Icons.check,
-                                              color: pureWhite, size: 14)
-                                          : null,
-                                    ),
-                                    const SizedBox(width: 12),
-                                    Text(
-                                      'Transfer',
-                                      style: GoogleFonts.poppins(
-                                        fontSize: 16,
-                                        color: textColor,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                  PaymentMethodSelector(
+                    paymentMethod: subscription.detail.paymentMethod,
                   ),
-
-                  // Additional info for transfer payments
-                  if (paymentMethod == 'transfer')
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(20),
-                      margin: const EdgeInsets.only(bottom: 16),
-                      decoration: BoxDecoration(
-                        color: Colors.blue.shade50,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.blue.shade200),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(Icons.info_outline, color: Colors.blue.shade600, size: 20),
-                              const SizedBox(width: 8),
-                              Text(
-                                'Transfer Payment Info',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.blue.shade800,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            'Please verify the transfer receipt and bank transaction details before confirming this payment.',
-                            style: GoogleFonts.poppins(
-                              fontSize: 14,
-                              color: Colors.blue.shade700,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: secondaryColor,
-                        foregroundColor: primaryColor,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(18),
-                          side: BorderSide(
-                            color: primaryColor, 
-                            width: 1,
-                          ),
-                        ),
-                        elevation: 0,
-                      ),
-                      child: Text(
-                        'Thank You!',
-                        style: GoogleFonts.poppins(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
+                  TransferProofSection(
+                    subscription: subscription,
+                    controller: controller,
+                  ),
+                  ThankYouButton(
+                    onPressed: () => Navigator.of(context).pop(),
                   ),
                 ],
               ),
@@ -305,45 +83,5 @@ class InvoicePage extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  Widget _buildDetailRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            label,
-            style: GoogleFonts.poppins(
-              fontSize: 14,
-              color: Colors.grey,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          Text(
-            value,
-            style: GoogleFonts.poppins(
-              fontSize: 14,
-              color: label == 'Status' ? _getStatusColor(value) : textColor,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Color _getStatusColor(String status) {
-    switch (status.toLowerCase()) {
-      case 'paid':
-        return Colors.green;
-      case 'pending':
-        return Colors.orange;
-      case 'failed':
-        return Colors.red;
-      default:
-        return textColor;
-    }
   }
 }
