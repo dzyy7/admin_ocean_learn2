@@ -23,7 +23,6 @@ class EditCoursePage extends StatefulWidget {
 class _EditCoursePageState extends State<EditCoursePage> {
   late TextEditingController titleController;
   late TextEditingController descController;
-  late TextEditingController urlController;
   late DateTime selectedDate;
   bool _isLoading = false;
 
@@ -32,7 +31,6 @@ class _EditCoursePageState extends State<EditCoursePage> {
     super.initState();
     titleController = TextEditingController(text: widget.course.title);
     descController = TextEditingController(text: widget.course.description);
-    urlController = TextEditingController(text: widget.course.videoUrl);
     selectedDate = widget.course.date;
   }
 
@@ -107,7 +105,6 @@ class _EditCoursePageState extends State<EditCoursePage> {
       courseId: widget.course.id,
       title: titleController.text,
       description: descController.text,
-      videoUrl: urlController.text,
       date: selectedDate,
     );
 
@@ -213,21 +210,7 @@ class _EditCoursePageState extends State<EditCoursePage> {
                           maxLines: 3,
                         ),
                         const SizedBox(height: 16),
-                        TextFormField(
-                          controller: urlController,
-                          decoration: InputDecoration(
-                            labelText: 'Video URL',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            prefixIcon: const Icon(Icons.link, color: primaryColor),
-                            hintText: 'https://example.com/video',
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: const BorderSide(color: primaryColor, width: 2),
-                            ),
-                          ),
-                        ),
+                        
                       ],
                     ),
                   ),
@@ -354,7 +337,6 @@ class _EditCoursePageState extends State<EditCoursePage> {
   void dispose() {
     titleController.dispose();
     descController.dispose();
-    urlController.dispose();
     super.dispose();
   }
 }

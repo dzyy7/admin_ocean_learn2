@@ -39,16 +39,19 @@ dependencies:
   get: ^4.7.2
   google_fonts: ^6.2.1
   intl: ^0.20.2
-  http: ^1.0.0
+  http: any
   shared_preferences: ^2.1.1
   url_launcher: ^6.1.12
   qr_flutter: ^4.1.0
   get_storage: ^2.1.1
-  flutter_launcher_icons: ^0.14.3
+  flutter_launcher_icons: any
   firebase_core: any
   firebase_messaging: any
   flutter_local_notifications: any
-  cached_network_image: ^3.4.1
+  cached_network_image: any
+  file_picker: any
+  permission_handler: any
+  open_file: any
 
 dev_dependencies:
   flutter_test:

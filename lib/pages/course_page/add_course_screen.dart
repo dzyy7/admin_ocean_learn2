@@ -1,7 +1,9 @@
+import 'dart:io';
 import 'package:admin_ocean_learn2/services/course_service.dart';
 import 'package:admin_ocean_learn2/utils/color_palette.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:file_picker/file_picker.dart';
 
 class AddCourseScreen extends StatefulWidget {
   final CourseService lessonService;
@@ -17,9 +19,37 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
-  final _urlController = TextEditingController();
   DateTime _selectedClassDate = DateTime.now();
   bool _isLoading = false;
+  File? _selectedPdfFile;
+  String? _selectedFileName;
+
+  Future<void> _selectPdfFile() async {
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf'],
+        allowMultiple: false,
+      );
+
+      if (result != null && result.files.single.path != null) {
+        setState(() {
+          _selectedPdfFile = File(result.files.single.path!);
+          _selectedFileName = result.files.single.name;
+        });
+      }
+    } catch (e) {
+      print('Error picking file: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error selecting file: $e'),
+            backgroundColor: Colors.red[600],
+          ),
+        );
+      }
+    }
+  }
 
   Future<void> _selectDate(DateTime initialDate, bool isClassDate) async {
     final DateTime? pickedDate = await showDatePicker(
@@ -156,31 +186,45 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                             },
                           ),
                           const SizedBox(height: 16),
-                          TextFormField(
-                            controller: _urlController,
-                            decoration: InputDecoration(
-                              labelText: 'Video URL',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
+                          // PDF File Selection
+                          Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: ListTile(
+                              leading: const Icon(Icons.picture_as_pdf, color: primaryColor),
+                              title: Text(
+                                _selectedFileName ?? 'Select PDF File',
+                                style: TextStyle(
+                                  color: _selectedFileName != null ? Colors.black : Colors.grey[600],
+                                ),
                               ),
-                              prefixIcon: const Icon(Icons.link, color: primaryColor),
-                              hintText: 'https://example.com/video',
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide: const BorderSide(color: primaryColor, width: 2),
+                              trailing: ElevatedButton(
+                                onPressed: _selectPdfFile,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: primaryColor,
+                                  foregroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                                child: const Text('Browse'),
+                              ),
+                              onTap: _selectPdfFile,
+                            ),
+                          ),
+                          if (_selectedPdfFile == null)
+                            const Padding(
+                              padding: EdgeInsets.only(top: 8.0, left: 12.0),
+                              child: Text(
+                                'Please select a PDF file',
+                                style: TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 12,
+                                ),
                               ),
                             ),
-                            validator: (value) {
-                              if (value != null && value.isNotEmpty) {
-                                bool validURL =
-                                    Uri.tryParse(value)?.hasAbsolutePath ?? false;
-                                if (!validURL) {
-                                  return 'Please enter a valid URL';
-                                }
-                              }
-                              return null;
-                            },
-                          ),
                         ],
                       ),
                     ),
@@ -266,7 +310,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                       onPressed: _isLoading
                           ? null
                           : () async {
-                              if (_formKey.currentState!.validate()) {
+                              if (_formKey.currentState!.validate() && _selectedPdfFile != null) {
                                 setState(() {
                                   _isLoading = true;
                                 });
@@ -275,7 +319,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                                     await widget.lessonService.createLesson(
                                   _titleController.text,
                                   _descriptionController.text,
-                                  _urlController.text,
+                                  _selectedPdfFile!,
                                   _selectedClassDate,
                                 );
 
@@ -311,6 +355,17 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                                     );
                                   }
                                 }
+                              } else if (_selectedPdfFile == null) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: const Text("Please select a PDF file"),
+                                    backgroundColor: Colors.red[600],
+                                    behavior: SnackBarBehavior.floating,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
+                                );
                               }
                             },
                       label: _isLoading
@@ -357,7 +412,6 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
   void dispose() {
     _titleController.dispose();
     _descriptionController.dispose();
-    _urlController.dispose();
     super.dispose();
   }
 }
