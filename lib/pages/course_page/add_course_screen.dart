@@ -108,6 +108,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: const Text('Create New Course'),
         backgroundColor: netralColor,
