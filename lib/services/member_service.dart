@@ -71,7 +71,7 @@ class MemberService {
     switch (sortBy) {
       case 'name':
         sortedMembers.sort((a, b) =>
-            a.accountInfo.name.toLowerCase().compareTo(a.accountInfo.name));
+            a.accountInfo.name.toLowerCase().compareTo(b.accountInfo.name.toLowerCase()));
         break;
 
       case 'status':
