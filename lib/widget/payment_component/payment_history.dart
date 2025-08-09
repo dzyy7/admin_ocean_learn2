@@ -13,13 +13,24 @@ class PaymentHistory extends StatelessWidget {
     required this.controller,
   }) : super(key: key);
 
+  // Helper method untuk mapping payment method
+  String _getDisplayPaymentMethod(String originalMethod) {
+    final method = originalMethod.toLowerCase();
+    if (method == 'cash') {
+      return 'Cash';
+    } else {
+      return 'Transfer'; // Semua selain cash jadi Transfer
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final username = controller.getUsernameFromId(subscription.userId);
     final userEmail = controller.getUserEmailFromId(subscription.userId);
     final userRole = controller.getUserRoleFromId(subscription.userId);
     final paymentMethod = subscription.detail.paymentMethod.toLowerCase();
-
+    final displayPaymentMethod = _getDisplayPaymentMethod(subscription.detail.paymentMethod);
+    
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       elevation: 2,
@@ -56,7 +67,8 @@ class PaymentHistory extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
                     color: _getStatusColor(subscription.status),
                     borderRadius: BorderRadius.circular(12),
@@ -86,7 +98,7 @@ class PaymentHistory extends StatelessWidget {
                 Expanded(
                   child: _buildDetailItem(
                     'Method',
-                    subscription.detail.paymentMethod,
+                    displayPaymentMethod, // Gunakan display method yang sudah dimapping
                     _getPaymentMethodIcon(paymentMethod),
                   ),
                 ),
@@ -109,10 +121,8 @@ class PaymentHistory extends StatelessWidget {
 
             const SizedBox(height: 12),
 
-            // Action buttons
             Row(
               children: [
-                // Show confirm button for cash and transfer if status is pending
                 if ((paymentMethod == 'cash' || paymentMethod == 'transfer') &&
                     subscription.status.toLowerCase() == 'pending')
                   Expanded(
@@ -120,34 +130,49 @@ class PaymentHistory extends StatelessWidget {
                       onPressed: () => controller.confirmPayment(subscription),
                       icon: const Icon(Icons.check, color: Colors.white),
                       label: Text(
-                        'Confirm ${paymentMethod.toUpperCase()}',
+                        'Confirm ${displayPaymentMethod.toUpperCase()}', 
                         style: const TextStyle(color: Colors.white),
                       ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: paymentMethod == 'cash' 
-                          ? Colors.green 
-                          : Colors.blue,
+                        backgroundColor: paymentMethod == 'cash'
+                            ? Colors.green
+                            : Colors.blue,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
                     ),
                   ),
-                
+
                 if ((paymentMethod == 'cash' || paymentMethod == 'transfer') &&
                     subscription.status.toLowerCase() == 'pending')
                   const SizedBox(width: 8),
-                
+
                 Expanded(
                   child: OutlinedButton.icon(
-                    onPressed: () => controller.viewInvoice(subscription),
-                    icon: const Icon(Icons.receipt, color: primaryColor),
-                    label: const Text(
+                    onPressed: subscription.status.toLowerCase() == 'canceled'
+                        ? null
+                        : () => controller.viewInvoice(subscription),
+                    icon: Icon(
+                      Icons.receipt,
+                      color: subscription.status.toLowerCase() == 'canceled'
+                          ? Colors.grey
+                          : primaryColor,
+                    ),
+                    label: Text(
                       'View Invoice',
-                      style: TextStyle(color: primaryColor),
+                      style: TextStyle(
+                        color: subscription.status.toLowerCase() == 'canceled'
+                            ? Colors.grey
+                            : primaryColor,
+                      ),
                     ),
                     style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: primaryColor),
+                      side: BorderSide(
+                        color: subscription.status.toLowerCase() == 'canceled'
+                            ? Colors.grey
+                            : primaryColor,
+                      ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),

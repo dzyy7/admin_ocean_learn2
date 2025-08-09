@@ -50,36 +50,38 @@ class MemberService {
     }
   }
 
-  static List<MemberModel> filterMembers(List<MemberModel> members, String query) {
+  static List<MemberModel> filterMembers(
+      List<MemberModel> members, String query) {
     if (query.isEmpty) return members;
-    
+
     return members.where((member) {
-      return member.accountInfo.name.toLowerCase().contains(query.toLowerCase()) ||
-             member.accountInfo.email.toLowerCase().contains(query.toLowerCase()) ||
-             member.accountInfo.role.toLowerCase().contains(query.toLowerCase());
+      return member.accountInfo.name
+              .toLowerCase()
+              .contains(query.toLowerCase()) ||
+          member.accountInfo.subscription.status
+              .toLowerCase()
+              .contains(query.toLowerCase());
     }).toList();
   }
 
-  static List<MemberModel> sortMembers(List<MemberModel> members, String sortBy) {
+  static List<MemberModel> sortMembers(
+      List<MemberModel> members, String sortBy) {
     List<MemberModel> sortedMembers = List.from(members);
-    
+
     switch (sortBy) {
       case 'name':
-        sortedMembers.sort((a, b) => a.accountInfo.name.compareTo(b.accountInfo.name));
+        sortedMembers.sort((a, b) =>
+            a.accountInfo.name.toLowerCase().compareTo(a.accountInfo.name));
         break;
-      case 'email':
-        sortedMembers.sort((a, b) => a.accountInfo.email.compareTo(b.accountInfo.email));
-        break;
-      case 'role':
-        sortedMembers.sort((a, b) => a.accountInfo.role.compareTo(b.accountInfo.role));
-        break;
-      case 'subscription':
-        sortedMembers.sort((a, b) => a.accountInfo.subscription.status.compareTo(b.accountInfo.subscription.status));
+
+      case 'status':
+        sortedMembers.sort((a, b) => b.accountInfo.subscription.status.toLowerCase()
+            .compareTo(a.accountInfo.subscription.status.toLowerCase()));
         break;
       default:
         break;
     }
-    
+
     return sortedMembers;
   }
 }

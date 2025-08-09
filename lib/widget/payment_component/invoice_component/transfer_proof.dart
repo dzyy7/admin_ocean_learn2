@@ -109,34 +109,41 @@ class TransferProofWithImage extends StatelessWidget {
                 ),
               ),
               imageBuilder: (context, imageProvider) => GestureDetector(
-                onTap: () => controller.showFullScreenImage(context, proofUrl),
-                child: Container(
-                  height: 200,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: imageProvider,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  child: Container(
-                    alignment: Alignment.bottomRight,
-                    padding: const EdgeInsets.all(8),
-                    child: Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.6),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: const Icon(
-                        Icons.fullscreen,
-                        color: Colors.white,
-                        size: 16,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+  onTap: () => controller.showFullScreenImage(context, proofUrl),
+  child: ConstrainedBox(
+    constraints: const BoxConstraints(
+      minHeight: 150,
+      maxHeight: 300,
+    ),
+    child: Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.grey.shade100, // Background untuk area kosong
+        image: DecorationImage(
+          image: imageProvider,
+          fit: BoxFit.contain, // Gambar tidak akan terpotong
+        ),
+      ),
+      child: Container(
+        alignment: Alignment.bottomRight,
+        padding: const EdgeInsets.all(8),
+        child: Container(
+          padding: const EdgeInsets.all(6),
+          decoration: BoxDecoration(
+            color: Colors.black.withOpacity(0.6),
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: const Icon(
+            Icons.fullscreen,
+            color: Colors.white,
+            size: 16,
+          ),
+        ),
+      ),
+    ),
+  ),
+),
+
             ),
           ),
           const SizedBox(height: 12),

@@ -129,13 +129,87 @@ class _EditCoursePageState extends State<EditCoursePage> {
       }
     } else {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text("Failed to update course"),
-            backgroundColor: Colors.red[600],
-            behavior: SnackBarBehavior.floating,
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => Dialog(
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            elevation: 8,
+            child: Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    netralColor,
+                    Colors.white,
+                  ],
+                ),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: primaryColor,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.calendar_today_outlined,
+                      color: pureWhite,
+                      size: 32,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Lesson Already Exists',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'A course already exists in this week. Please choose a different week.',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey.shade700,
+                      height: 1.4,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.of(context).pop(true),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: primaryColor,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 2,
+                      ),
+                      child: const Text(
+                        'Choose Different Week',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         );
@@ -186,10 +260,12 @@ class _EditCoursePageState extends State<EditCoursePage> {
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            prefixIcon: const Icon(Icons.title, color: primaryColor),
+                            prefixIcon:
+                                const Icon(Icons.title, color: primaryColor),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
-                              borderSide: const BorderSide(color: primaryColor, width: 2),
+                              borderSide: const BorderSide(
+                                  color: primaryColor, width: 2),
                             ),
                           ),
                         ),
@@ -201,16 +277,17 @@ class _EditCoursePageState extends State<EditCoursePage> {
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            prefixIcon: const Icon(Icons.description, color: primaryColor),
+                            prefixIcon: const Icon(Icons.description,
+                                color: primaryColor),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
-                              borderSide: const BorderSide(color: primaryColor, width: 2),
+                              borderSide: const BorderSide(
+                                  color: primaryColor, width: 2),
                             ),
                           ),
                           maxLines: 3,
                         ),
                         const SizedBox(height: 16),
-                        
                       ],
                     ),
                   ),
@@ -238,7 +315,8 @@ class _EditCoursePageState extends State<EditCoursePage> {
                         const SizedBox(height: 16),
                         Row(
                           children: [
-                            const Icon(Icons.calendar_today, color: primaryColor),
+                            const Icon(Icons.calendar_today,
+                                color: primaryColor),
                             const SizedBox(width: 12),
                             Expanded(
                               child: Column(

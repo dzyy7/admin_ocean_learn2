@@ -47,14 +47,7 @@ class MemberStatistics extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              Expanded(
-                child: _buildStatCard(
-                  'Admins',
-                  controller.adminMembers.value.toString(),
-                  Icons.admin_panel_settings,
-                  Colors.red,
-                ),
-              ),
+              
             ],
           )),
           const SizedBox(height: 12),

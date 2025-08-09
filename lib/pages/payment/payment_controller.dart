@@ -132,6 +132,7 @@ class PaymentController extends GetxController {
   }
 
   void viewInvoice(SubscriptionModel subscription) {
+
     final paymentMethod = subscription.detail.paymentMethod.toLowerCase();
 
     if (paymentMethod == 'cash' || paymentMethod == 'transfer') {
@@ -146,7 +147,7 @@ class PaymentController extends GetxController {
     } else {
       Get.snackbar(
         'Info',
-        'Online invoice view is disabled in this version.',
+        ' invoice view is disabled in this version.',
         backgroundColor: Colors.grey,
         colorText: Colors.white,
       );
@@ -174,7 +175,7 @@ class PaymentController extends GetxController {
                       ),
                     ),
                     errorWidget: (context, url, error) => const Center(
-                      child: Icon(Icons.error_outline, 
+                      child: Icon(Icons.error_outline,
                           color: Colors.white, size: 48),
                     ),
                   ),
