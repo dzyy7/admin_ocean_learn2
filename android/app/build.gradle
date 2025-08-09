@@ -8,7 +8,7 @@ plugins {
 
 android {
     namespace = "com.example.admin_ocean_learn2"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 35
     ndkVersion = flutter.ndkVersion
 
     compileOptions {

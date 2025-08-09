@@ -82,27 +82,17 @@ class LoginController extends GetxController {
   }
 
   void logout() async {
-    final token = UserStorage.getToken() ?? _sessionToken ?? '';
+  await UserStorage.clearUserData();
 
-    if (token.isNotEmpty) {
-      final result = await LoginService.logout(token);
-      
-      await UserStorage.clearUserData();
-      _sessionToken = null;
-      _sessionEmail = null;
-      _sessionName = null;
-      _sessionRole = null;
-      
-      if (result['success']) {
-        print('After logout token: ${UserStorage.getToken() ?? _sessionToken}');
-        Get.offAllNamed('/');
-      } else {
-        _showErrorDialog(result['message']);
-      }
-    } else {
-      Get.offAllNamed('/');
-    }
-  }
+  _sessionToken = null;
+  _sessionEmail = null;
+  _sessionName = null;
+  _sessionRole = null;
+
+  print('User logged out locally.');
+  Get.offAllNamed('/');
+}
+
 
   void _showErrorDialog(String message) {
     Get.dialog(

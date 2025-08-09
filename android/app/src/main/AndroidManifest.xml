@@ -3,6 +3,7 @@
         android:label="admin_ocean_learn2"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
+        
         <activity
             android:name=".MainActivity"
             android:exported="true"

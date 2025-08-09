@@ -13,6 +13,7 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: netralColor,
+      resizeToAvoidBottomInset: false,
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: SingleChildScrollView(
@@ -61,7 +62,6 @@ class LoginPage extends StatelessWidget {
                       const SizedBox(height: 10),
                       _buildDividerWithText(),
                       const SizedBox(height: 10),
-                      _buildSocialSignInButtons(),
                       const SizedBox(height: 10),
                       _buildSignInButton(),
                     ],
@@ -139,7 +139,7 @@ class LoginPage extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10),
           child: Text(
-            'Sign in with',
+            'please sign in',
             style: GoogleFonts.poppins(
               fontSize: 14,
               color: Colors.black54,
@@ -147,37 +147,6 @@ class LoginPage extends StatelessWidget {
           ),
         ),
         const Expanded(child: Divider(thickness: 1)),
-      ],
-    );
-  }
-
-  Widget _buildSocialSignInButtons() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-          decoration: const BoxDecoration(shape: BoxShape.circle),
-          child: IconButton(
-            onPressed: () {
-            },
-            icon: Image.network(
-              'https://www.google.com/favicon.ico',
-              width: 50,
-              height: 50,
-            ),
-            iconSize: 50,
-          ),
-        ),
-        Container(
-          decoration: const BoxDecoration(shape: BoxShape.circle),
-          child: IconButton(
-            onPressed: () {
-            },
-            icon: Icon(Icons.facebook),
-            color: Colors.blue[700],
-            iconSize: 50,
-          ),
-        ),
       ],
     );
   }

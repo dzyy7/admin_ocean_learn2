@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:admin_ocean_learn2/model/course_model.dart';
 import 'package:admin_ocean_learn2/pages/login/login_controller.dart';
 import 'package:admin_ocean_learn2/utils/user_storage.dart';
@@ -9,9 +10,7 @@ class CourseService {
   static const String baseUrl = 'https://ocean-learn-api.rplrus.com/api/v1/admin';
   List<CourseModel> _courses = [];
 
-
-
- String? getToken() {
+  String? getToken() {
     return UserStorage.getToken() ?? LoginController.getSessionToken();
   }
 
@@ -34,8 +33,6 @@ class CourseService {
           _courses = (jsonData['data'] as List)
               .map((courseJson) => CourseModel.fromApiJson(courseJson))
               .toList();
-
-
         }
       } else if (response.statusCode == 401) {
         print('Unauthorized access. Token may be expired.');
@@ -53,7 +50,7 @@ class CourseService {
   }
 
   Future<CourseModel?> createLesson(
-      String title, String description, String url, DateTime classDate) async {
+      String title, String description, File pdfFile, DateTime classDate) async {
     final token = getToken();
 
     if (token == null) {
@@ -66,34 +63,42 @@ class CourseService {
       return null;
     }
 
-    final requestBody = {
-      'title': title,
-      'description': description,
-      'video_url': url,
-      'date': DateFormat('yyyy-MM-dd HH:mm').format(classDate),
-    };
-
     try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/course'),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: jsonEncode(requestBody),
+      var request = http.MultipartRequest('POST', Uri.parse('$baseUrl/course'));
+      
+      // Add headers
+      request.headers['Authorization'] = 'Bearer $token';
+      request.headers['Accept'] = 'application/json';
+      
+      // Add fields
+      request.fields['title'] = title;
+      request.fields['description'] = description;
+      request.fields['date'] = DateFormat('yyyy-MM-dd HH:mm').format(classDate);
+      
+      // Add PDF file
+      var pdfStream = http.ByteStream(pdfFile.openRead());
+      var length = await pdfFile.length();
+      var multipartFile = http.MultipartFile(
+        'file', // field name expected by API
+        pdfStream,
+        length,
+        filename: pdfFile.path.split('/').last,
       );
+      request.files.add(multipartFile);
+
+      var response = await request.send();
+      var responseData = await response.stream.bytesToString();
 
       if (response.statusCode == 201 || response.statusCode == 200) {
-        final jsonData = jsonDecode(response.body);
+        final jsonData = jsonDecode(responseData);
         final courseData = jsonData['data'];
         if (courseData != null) {
-          final newCourse = CourseModel.fromApiJson(courseData);
+          final newCourse = CourseModel.fromApiJson(jsonData);
           _courses.add(newCourse);
           return newCourse;
         }
       } else {
-        print('Failed to create: ${response.statusCode} - ${response.body}');
+        print('Failed to create: ${response.statusCode} - $responseData');
       }
     } catch (e) {
       print('Error creating course: $e');
@@ -134,7 +139,6 @@ class CourseService {
     required String courseId,
     required String title,
     required String description,
-    required String videoUrl,
     required DateTime date,
   }) async {
     final token = getToken();
@@ -155,7 +159,6 @@ class CourseService {
         body: jsonEncode({
           'title': title,
           'description': description,
-          'video_url': videoUrl,
           'date': DateFormat('yyyy-MM-dd HH:mm').format(date),
         }),
       );
@@ -167,11 +170,10 @@ class CourseService {
             id: courseId,
             title: title,
             description: description,
-            videoUrl: videoUrl,
+            filePath: _courses[index].filePath,
             date: date,
             qrCode: _courses[index].qrCode,
             qrEndDate: _courses[index].qrEndDate,
-            note: _courses[index].note,
           );
         }
         return true;
@@ -222,7 +224,7 @@ class CourseService {
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body);
         if (jsonData['status'] == true && jsonData['data'] != null) {
-          return CourseModel.fromApiJson(jsonData['data']);
+          return CourseModel.fromApiJson(jsonData);
         }
       }
     } catch (e) {

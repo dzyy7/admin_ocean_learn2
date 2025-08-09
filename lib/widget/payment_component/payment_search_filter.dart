@@ -30,7 +30,6 @@ class SearchAndFilter extends StatelessWidget {
                     margin: const EdgeInsets.only(right: 8),
                     child: ChoiceChip(
                       label: Text(formatMonthLabel(month)),
-
                       selected: isSelected,
                       selectedColor: primaryColor,
                       backgroundColor: secondaryColor,

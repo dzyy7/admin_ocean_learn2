@@ -2,21 +2,19 @@ class CourseModel {
   final String id;
   final String title;
   final String description;
-  final String videoUrl;
+  final String filePath;
   final DateTime date;
   final String? qrCode;
   final DateTime? qrEndDate;
-  String note;
 
   CourseModel({
     required this.id,
     required this.title,
     required this.description,
-    required this.videoUrl,
+    required this.filePath,
     required this.date,
     this.qrCode,
     this.qrEndDate,
-    this.note = '',
   });
 
   factory CourseModel.fromApiJson(Map<String, dynamic> json) {
@@ -26,13 +24,12 @@ class CourseModel {
     
     return CourseModel(
       id: json['id'].toString(),
-      title: data['title'] ?? '',
+      title: data['title'] ??  '',
       description: data['description'] ?? '',
-      videoUrl: data['video_url'] ?? '',
+      filePath: data['file_path'] ?? '',
       date: DateTime.tryParse(dateData['class_date'] ?? '') ?? DateTime.now(),
       qrCode: qrData['qr_code'],
       qrEndDate: DateTime.tryParse(qrData['end_at'] ?? ''),
-      note: data['note'] ?? '',
     );
   }
 }

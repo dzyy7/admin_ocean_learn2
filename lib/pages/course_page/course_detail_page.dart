@@ -25,14 +25,12 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
   bool _isNoteVisible = false;
   bool _isLoading = false;
   bool _isAdmin = false;
-  late TextEditingController _noteController;
   late CourseModel _currentCourse;
 
   @override
   void initState() {
     super.initState();
     _currentCourse = widget.course;
-    _noteController = TextEditingController(text: widget.course.note);
     _checkAdminStatus();
     _loadCourseDetail();
   }
@@ -55,8 +53,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
     if (courseDetail != null) {
       setState(() {
         _currentCourse = courseDetail;
-        _noteController.text = courseDetail.note;
-      });
+     });
     }
     
     setState(() {
@@ -81,7 +78,6 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
 
   @override
   void dispose() {
-    _noteController.dispose();
     super.dispose();
   }
 

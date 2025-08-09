@@ -58,9 +58,7 @@ class MemberSearchFilter extends StatelessWidget {
                       isExpanded: true,
                       items: const [
                         DropdownMenuItem(value: 'name', child: Text('Name')),
-                        DropdownMenuItem(value: 'email', child: Text('Email')),
-                        DropdownMenuItem(value: 'role', child: Text('Role')),
-                        DropdownMenuItem(value: 'subscription', child: Text('Subscription')),
+                        DropdownMenuItem(value: 'status', child: Text('Status')),
                       ],
                       onChanged: (value) {
                         if (value != null) {

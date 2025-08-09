@@ -44,7 +44,7 @@ class SchedulePage extends StatelessWidget {
         if (controller.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
         }
-        
+
         return RefreshIndicator(
           onRefresh: () => controller.loadCourses(),
           child: SingleChildScrollView(
@@ -53,6 +53,7 @@ class SchedulePage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
+                  width: MediaQuery.of(context).size.width, 
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -74,9 +75,7 @@ class SchedulePage extends StatelessWidget {
                         "• Each week can have only one lesson or none\n"
                         "• Lessons are shown on the calendar with blue circles\n"
                         "• Tap on a lesson date in the calendar to view details",
-                        style: TextStyle(
-                          fontSize: 14,
-                        ),
+                        style: TextStyle(fontSize: 14),
                       ),
                     ],
                   ),
@@ -92,11 +91,12 @@ class SchedulePage extends StatelessWidget {
       }),
     );
   }
-  
-  Widget _buildLectureSection(ScheduleController controller, BuildContext context) {
+
+  Widget _buildLectureSection(
+      ScheduleController controller, BuildContext context) {
     return Obx(() {
       final courses = controller.getCoursesForCurrentMonth();
-      
+
       if (courses.isEmpty) {
         return Container(
           padding: const EdgeInsets.all(16),
@@ -116,7 +116,7 @@ class SchedulePage extends StatelessWidget {
           ),
         );
       }
-      
+
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -135,9 +135,10 @@ class SchedulePage extends StatelessWidget {
             final course = entry.value;
             final isPast = controller.isDatePast(course.date);
             final formattedDate = DateFormat('MMMM d yyyy').format(course.date);
-            
+
             return Padding(
-              padding: EdgeInsets.only(bottom: index < courses.length - 1 ? 16 : 0),
+              padding:
+                  EdgeInsets.only(bottom: index < courses.length - 1 ? 16 : 0),
               child: ScheduleCard(
                 weekNumber: index + 1,
                 date: formattedDate,
