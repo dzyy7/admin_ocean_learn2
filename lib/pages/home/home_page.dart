@@ -17,6 +17,7 @@ class HomePage extends StatelessWidget {
     return Obx(() => Scaffold(
           backgroundColor: netralColor,
           appBar: AppBar(
+            centerTitle: true,
             backgroundColor: netralColor,
             elevation: 0,
             leading: IconButton(
@@ -26,28 +27,22 @@ class HomePage extends StatelessWidget {
             title: Text(
               "Here's your schedule, ${controller.name.value}!",
               style: const TextStyle(
+                
                 color: Colors.black,
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
               ),
             ),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.notifications_outlined,
-                    color: Colors.black),
-                onPressed: () {},
-              ),
-            ],
           ),
           floatingActionButton: AddCourseButton(
             courseService: controller.courseService,
-            onCourseAdded: () => controller.loadInitialLessons(),
+            onCourseAdded: () => controller.loadInitialCourses(),
           ),
           body: SafeArea(
             child: controller.isLoading.value
                 ? const Center(child: CircularProgressIndicator())
                 : RefreshIndicator(
-                    onRefresh: () => controller.loadInitialLessons(),
+                    onRefresh: () => controller.loadInitialCourses(),
                     child: CustomScrollView(
                       physics: const AlwaysScrollableScrollPhysics(),
                       slivers: [
@@ -57,10 +52,10 @@ class HomePage extends StatelessWidget {
                             delegate: SliverChildListDelegate([
                               const SizedBox(height: 20),
                               FeaturedLessonCard(
-                                lessons: controller.lessons,
+                                lessons: controller.courses,
                                 courseService: controller.courseService,
                                 onRefresh: (_) =>
-                                    controller.loadInitialLessons(),
+                                    controller.loadInitialCourses(),
                               ),
                               const SizedBox(height: 20),
                               Obx(() => SearchBarWidget(
@@ -70,10 +65,10 @@ class HomePage extends StatelessWidget {
                                   )),
                               const SizedBox(height: 20),
                               LessonList(
-                                lessons: controller.filteredLessons,
+                                lessons: controller.filteredCourses,
                                 courseService: controller.courseService,
                                 onRefresh: (_) =>
-                                    controller.loadInitialLessons(),
+                                    controller.loadInitialCourses(),
                               ),
                               if (controller.isLoadingMore.value)
                                 const Padding(

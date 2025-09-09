@@ -67,7 +67,7 @@ class LessonList extends StatelessWidget {
                 MaterialPageRoute(
                   builder: (context) => CourseDetailPage(
                     course: lesson,
-                    lessonService: courseService,
+                    courseService: courseService,
                   ),
                 ),
               );
@@ -115,7 +115,7 @@ class LessonList extends StatelessWidget {
             children: <Widget>[
               ListTile(
                 leading: const Icon(Icons.edit),
-                title: const Text('Edit Lesson'),
+                title: const Text('Edit Course'),
                 onTap: () {
                   Navigator.pop(context);
                   onEdit();
@@ -123,7 +123,7 @@ class LessonList extends StatelessWidget {
               ),
               ListTile(
                 leading: const Icon(Icons.delete_outline, color: Colors.red),
-                title: const Text('Delete Lesson'),
+                title: const Text('Delete Course'),
                 onTap: () {
                   Navigator.pop(context);
                   _showDeleteConfirmation(context, onDelete);
@@ -142,8 +142,8 @@ class LessonList extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Delete Lesson'),
-          content: const Text('Are you sure you want to delete this lesson?'),
+          title: const Text('Delete Course'),
+          content: const Text('Are you sure you want to delete this course?'),
           actions: <Widget>[
             TextButton(
               child: const Text('Cancel'),
@@ -156,7 +156,7 @@ class LessonList extends StatelessWidget {
               onPressed: () {
                 Navigator.of(context).pop();
                 onConfirmDelete();
-              },
+              }
             ),
           ],
         );

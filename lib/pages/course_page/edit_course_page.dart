@@ -101,7 +101,7 @@ class _EditCoursePageState extends State<EditCoursePage> {
       _isLoading = true;
     });
 
-    final success = await widget.courseService.updateLesson(
+    final success = await widget.courseService.updateCourse(
       courseId: widget.course.id,
       title: titleController.text,
       description: descController.text,
@@ -167,7 +167,7 @@ class _EditCoursePageState extends State<EditCoursePage> {
                   ),
                   const SizedBox(height: 16),
                   const Text(
-                    'Lesson Already Exists',
+                    'Course Already Exists',
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,

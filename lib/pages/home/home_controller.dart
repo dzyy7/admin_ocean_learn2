@@ -11,13 +11,13 @@ class HomeController extends GetxController {
   var name = ''.obs;
   var isLoading = true.obs;
   var isLoadingMore = false.obs;
-  var lessons = <CourseModel>[].obs;
+  var courses = <CourseModel>[].obs;
   var searchQuery = ''.obs;
   var sortByNewest = true.obs;
 
-  List<CourseModel> get filteredLessons {
-    var filtered = lessons.where((lesson) =>
-        lesson.title.toLowerCase().contains(searchQuery.value.toLowerCase())).toList();
+  List<CourseModel> get filteredCourses {
+    var filtered = courses.where((course) =>
+        course.title.toLowerCase().contains(searchQuery.value.toLowerCase())).toList();
 
     filtered.sort((a, b) => sortByNewest.value
         ? b.date.compareTo(a.date)
@@ -39,7 +39,7 @@ class HomeController extends GetxController {
   void onInit() {
     super.onInit();
     loadUserName();
-    loadInitialLessons();
+    loadInitialCourses();
   }
 
   @override
@@ -57,14 +57,14 @@ class HomeController extends GetxController {
     name.value = userName ?? '';
   }
   
-  Future<void> loadInitialLessons() async {
+  Future<void> loadInitialCourses() async {
     isLoading.value = true;
     await courseService.loadLessons(1);
 
     final sorted = courseService.getLessons()
       ..sort((a, b) => b.date.compareTo(a.date)); 
 
-    lessons.assignAll(sorted);
+    courses.assignAll(sorted);
     isLoading.value = false;
   }
 }

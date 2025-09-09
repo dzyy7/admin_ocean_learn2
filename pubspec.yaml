@@ -52,6 +52,8 @@ dependencies:
   file_picker: any
   permission_handler: any
   open_file: any
+  screenshot: any
+  path_provider: any
 
 dev_dependencies:
   flutter_test:

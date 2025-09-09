@@ -124,7 +124,7 @@ class CalendarWidget extends StatelessWidget {
                 MaterialPageRoute(
                   builder: (context) => CourseDetailPage(
                     course: course,
-                    lessonService: controller.courseService,
+                    courseService: controller.courseService,
                   ),
                 ),
               ).then((_) => controller.loadCourses());

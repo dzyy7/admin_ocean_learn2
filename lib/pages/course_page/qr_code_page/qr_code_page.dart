@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ui';
 import 'package:admin_ocean_learn2/model/attendance_model.dart';
 import 'package:admin_ocean_learn2/model/course_model.dart';
 import 'package:admin_ocean_learn2/services/attendance_service.dart';
@@ -33,15 +34,13 @@ class _QRCodePageState extends State<QRCodePage> {
     });
 
     try {
-      final attendance = await AttendanceService.getAttendance(widget.course.id);
+      final attendance =
+          await AttendanceService.getAttendance(widget.course.id);
       setState(() {
         attendanceData = attendance;
         isLoadingAttendance = false;
       });
     } catch (e) {
-      setState(() {
-        isLoadingAttendance = false;
-      });
       print('Error loading attendance: $e');
     }
   }
@@ -49,7 +48,7 @@ class _QRCodePageState extends State<QRCodePage> {
   @override
   Widget build(BuildContext context) {
     String qrDecodedData = '';
-    
+
     if (widget.course.qrCode != null) {
       try {
         qrDecodedData = utf8.decode(base64.decode(widget.course.qrCode!));
@@ -60,7 +59,7 @@ class _QRCodePageState extends State<QRCodePage> {
 
     String expiryText = 'No expiration';
     Color expiryColor = Colors.black54;
-    
+
     if (widget.course.qrEndDate != null) {
       final now = DateTime.now();
       if (widget.course.qrEndDate!.isAfter(now)) {
@@ -77,6 +76,14 @@ class _QRCodePageState extends State<QRCodePage> {
         expiryText = 'QR Code has expired';
         expiryColor = Colors.red;
       }
+    }
+    bool isLocked = true;
+
+    final now = DateTime.now();
+    final daysDiff = widget.course.date.difference(now).inDays;
+
+    if (daysDiff <= 6 && daysDiff >= 0) {
+      isLocked = false;
     }
 
     return Scaffold(
@@ -106,7 +113,6 @@ class _QRCodePageState extends State<QRCodePage> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            // QR Code Section
             Container(
               width: MediaQuery.of(context).size.width * 0.9,
               padding: const EdgeInsets.all(24),
@@ -134,19 +140,30 @@ class _QRCodePageState extends State<QRCodePage> {
                   ),
                   const SizedBox(height: 24),
                   if (qrDecodedData.isNotEmpty)
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: primaryColor, width: 2),
-                      ),
-                      child: QrImageView(
-                        data: qrDecodedData,
-                        version: QrVersions.auto,
-                        size: 200.0,
-                        backgroundColor: Colors.white,
-                      ),
+                    Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        QrImageView(
+                          data: qrDecodedData,
+                          version: QrVersions.auto,
+                          size: 200.0,
+                          backgroundColor: Colors.white,
+                        ),
+                        if (isLocked)
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: BackdropFilter(
+                              filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                              child: Container(
+                                width: 200,
+                                height: 200,
+                                color: Colors.black.withOpacity(0.2),
+                                child: Icon(Icons.lock,
+                                    color: Colors.white, size: 48),
+                              ),
+                            ),
+                          )
+                      ],
                     )
                   else
                     Text(
@@ -168,10 +185,7 @@ class _QRCodePageState extends State<QRCodePage> {
                 ],
               ),
             ),
-            
             const SizedBox(height: 24),
-            
-            // Attendance List Section
             Container(
               width: MediaQuery.of(context).size.width * 0.9,
               padding: const EdgeInsets.all(20),
@@ -207,7 +221,6 @@ class _QRCodePageState extends State<QRCodePage> {
                       ),
                     ],
                   ),
-                  
                   if (attendanceData?.date.isNotEmpty == true) ...[
                     const SizedBox(height: 8),
                     Text(
@@ -218,9 +231,7 @@ class _QRCodePageState extends State<QRCodePage> {
                       ),
                     ),
                   ],
-                  
                   const SizedBox(height: 16),
-                  
                   if (isLoadingAttendance)
                     const Center(
                       child: Padding(
@@ -234,7 +245,7 @@ class _QRCodePageState extends State<QRCodePage> {
                         'No attendance records yet',
                         style: GoogleFonts.poppins(
                           color: const Color.fromARGB(255, 150, 150, 150),
-                          fontSize: 14, 
+                          fontSize: 14,
                         ),
                       ),
                     )
@@ -261,7 +272,6 @@ class _QRCodePageState extends State<QRCodePage> {
                   else
                     Column(
                       children: [
-                        // Summary
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
@@ -289,15 +299,13 @@ class _QRCodePageState extends State<QRCodePage> {
                             ],
                           ),
                         ),
-                        
                         const SizedBox(height: 16),
-                        
-                        // Attendance List
                         ListView.separated(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
                           itemCount: attendanceData!.data.length,
-                          separatorBuilder: (context, index) => const SizedBox(height: 8),
+                          separatorBuilder: (context, index) =>
+                              const SizedBox(height: 8),
                           itemBuilder: (context, index) {
                             final attendance = attendanceData!.data[index];
                             return _buildAttendanceItem(attendance, index + 1);
@@ -308,7 +316,6 @@ class _QRCodePageState extends State<QRCodePage> {
                 ],
               ),
             ),
-            
             const SizedBox(height: 20),
           ],
         ),
@@ -326,7 +333,6 @@ class _QRCodePageState extends State<QRCodePage> {
       ),
       child: Row(
         children: [
-          // Number
           Container(
             width: 32,
             height: 32,
@@ -345,10 +351,9 @@ class _QRCodePageState extends State<QRCodePage> {
               ),
             ),
           ),
-          
+
           const SizedBox(width: 12),
-          
-          // User Info
+
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -372,12 +377,13 @@ class _QRCodePageState extends State<QRCodePage> {
               ],
             ),
           ),
-          
+
           // Status Badge
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: attendance.status == 'present' ? Colors.green : Colors.orange,
+              color:
+                  attendance.status == 'present' ? Colors.green : Colors.orange,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(

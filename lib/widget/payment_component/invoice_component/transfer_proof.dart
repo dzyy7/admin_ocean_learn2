@@ -121,7 +121,7 @@ class TransferProofWithImage extends StatelessWidget {
         color: Colors.grey.shade100, // Background untuk area kosong
         image: DecorationImage(
           image: imageProvider,
-          fit: BoxFit.contain, // Gambar tidak akan terpotong
+          fit: BoxFit.cover, // Gambar tidak akan terpotong
         ),
       ),
       child: Container(

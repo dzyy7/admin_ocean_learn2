@@ -1,6 +1,8 @@
 import 'package:admin_ocean_learn2/model/member_model.dart';
 import 'package:admin_ocean_learn2/pages/member/member_controller.dart';
+import 'package:admin_ocean_learn2/services/avatar_service.dart';
 import 'package:admin_ocean_learn2/utils/color_palette.dart';
+import 'package:admin_ocean_learn2/widget/member_component/avatar_widget.dart';
 import 'package:flutter/material.dart';
 
 class MemberCard extends StatelessWidget {
@@ -35,22 +37,11 @@ class MemberCard extends StatelessWidget {
           child: Row(
             children: [
               // Avatar
-              CircleAvatar(
-                radius: 24,
-                backgroundColor: primaryColor.withOpacity(0.1),
-                backgroundImage: member.accountInfo.avatar != null 
-                    ? NetworkImage(member.accountInfo.avatar!)
-                    : null,
-                child: member.accountInfo.avatar == null
-                    ? Text(
-                        member.accountInfo.name.isNotEmpty 
-                            ? member.accountInfo.name[0].toUpperCase()
-                            : '?',
-                        style: const TextStyle(
-                          color: primaryColor,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      )
+              AvatarWidget(
+                avatarPath: member.accountInfo.avatar,
+                size: 48,
+                fallbackText: member.accountInfo.name.isNotEmpty 
+                    ? member.accountInfo.name
                     : null,
               ),
               const SizedBox(width: 16),
