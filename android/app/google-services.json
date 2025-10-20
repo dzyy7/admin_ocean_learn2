@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "554408467060",
+    "project_id": "ocean-learn-api",
+    "storage_bucket": "ocean-learn-api.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:554408467060:android:f81051c3416946f3770f21",
+        "android_client_info": {
+          "package_name": "com.example.admin_ocean_learn2"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4boTSOfNKO7CdestY05c5Cu9iNPTF0ug"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:554408467060:android:a9c9c27bd0cdc7f4770f21",
+        "android_client_info": {
+          "package_name": "com.example.user_ocean_learn"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4boTSOfNKO7CdestY05c5Cu9iNPTF0ug"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
