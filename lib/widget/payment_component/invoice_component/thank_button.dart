@@ -6,9 +6,9 @@ class ThankYouButton extends StatelessWidget {
   final VoidCallback onPressed;
 
   const ThankYouButton({
-    Key? key,
+    super.key,
     required this.onPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +22,7 @@ class ThankYouButton extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(18),
-            side: BorderSide(
+            side: const BorderSide(
               color: primaryColor, 
               width: 1,
             ),

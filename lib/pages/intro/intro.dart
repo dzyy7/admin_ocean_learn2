@@ -105,7 +105,7 @@ class IntroPage extends StatelessWidget {
                         }
                       },
                       style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: primaryColor, width: 1),
+                        side: const BorderSide(color: primaryColor, width: 1),
                         foregroundColor: textColor,
                         backgroundColor: secondaryColor,
                         shape: RoundedRectangleBorder(

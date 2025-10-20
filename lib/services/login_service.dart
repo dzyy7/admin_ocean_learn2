@@ -8,7 +8,7 @@ class LoginService {
     try {
       final response = await http
           .post(
-            Uri.parse('https://ocean-learn-api.rplrus.com/api/v1/admin/auth'),
+            Uri.parse('https://api.momentumoceanlearn.com/api/v1/admin/auth'),
             headers: {'Content-Type': 'application/json'},
             body: jsonEncode({'email': email, 'password': password}),
           )

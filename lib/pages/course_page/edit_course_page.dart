@@ -43,7 +43,7 @@ class _EditCoursePageState extends State<EditCoursePage> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
+            colorScheme: const ColorScheme.light(
               primary: primaryColor,
               onPrimary: Colors.white,
               surface: Colors.white,
@@ -63,7 +63,7 @@ class _EditCoursePageState extends State<EditCoursePage> {
         builder: (context, child) {
           return Theme(
             data: Theme.of(context).copyWith(
-              colorScheme: ColorScheme.light(
+              colorScheme: const ColorScheme.light(
                 primary: primaryColor,
               ),
             ),
@@ -101,7 +101,7 @@ class _EditCoursePageState extends State<EditCoursePage> {
       _isLoading = true;
     });
 
-    final success = await widget.courseService.updateLesson(
+    final success = await widget.courseService.updateCourse(
       courseId: widget.course.id,
       title: titleController.text,
       description: descController.text,
@@ -141,7 +141,7 @@ class _EditCoursePageState extends State<EditCoursePage> {
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
-                gradient: LinearGradient(
+                gradient: const LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
@@ -155,11 +155,11 @@ class _EditCoursePageState extends State<EditCoursePage> {
                 children: [
                   Container(
                     padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       color: primaryColor,
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(
+                    child: const Icon(
                       Icons.calendar_today_outlined,
                       color: pureWhite,
                       size: 32,
@@ -167,7 +167,7 @@ class _EditCoursePageState extends State<EditCoursePage> {
                   ),
                   const SizedBox(height: 16),
                   const Text(
-                    'Lesson Already Exists',
+                    'Course Already Exists',
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -373,9 +373,9 @@ class _EditCoursePageState extends State<EditCoursePage> {
                     ),
                     onPressed: _isLoading ? null : saveChanges,
                     label: _isLoading
-                        ? Row(
+                        ? const Row(
                             mainAxisSize: MainAxisSize.min,
-                            children: const [
+                            children: [
                               SizedBox(
                                 width: 20,
                                 height: 20,

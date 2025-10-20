@@ -31,7 +31,7 @@ class PaymentPage extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh, color: pureBlack),
-            onPressed: () => controller.refreshData(), // Updated method call
+            onPressed: () => controller.refreshData(),
           ),
         ],
       ),
@@ -61,8 +61,7 @@ class PaymentPage extends StatelessWidget {
                   style: const TextStyle(color: textColor)),
               const SizedBox(height: 16),
               ElevatedButton(
-                onPressed: () =>
-                    controller.refreshData(), // Updated method call
+                onPressed: () => controller.refreshData(),
                 child: const Text('Retry'),
               ),
             ],
@@ -97,7 +96,7 @@ class PaymentPage extends StatelessWidget {
           ),
         ],
         body: RefreshIndicator(
-          onRefresh: () => controller.refreshData(), // Updated method call
+          onRefresh: () => controller.refreshData(),
           child: ListView.builder(
             padding: const EdgeInsets.all(16),
             itemCount: controller.getSubscriptionsForSelectedMonth().length,
@@ -108,14 +107,16 @@ class PaymentPage extends StatelessWidget {
                       int getStatusPriority(String status) {
                         switch (status.toLowerCase()) {
                           case 'pending':
-                            return 0;
+                            return 0; // Highest priority - needs attention
                           case 'paid':
-                            return 1;
+                            return 1; // Second priority - needs confirmation
+                          case 'confirmed':
+                            return 2; // Third priority - completed
                           case 'failed':
                           case 'canceled':
-                            return 2;
+                            return 3; // Lowest priority - failed/canceled
                           default:
-                            return 3;
+                            return 4; // Unknown status
                         }
                       }
 

@@ -16,7 +16,7 @@ class DrawerHeaderWidget extends StatelessWidget {
             width: 150,
             child: Image.asset(
               'assets/images/logo_light.png',
-              errorBuilder: (ctx, err, st) => Icon(
+              errorBuilder: (ctx, err, st) => const Icon(
                 Icons.school,
                 size: 40,
                 color: Colors.blue,

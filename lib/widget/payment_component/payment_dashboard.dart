@@ -20,8 +20,8 @@ class PaymentDashboard extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.15), 
-            blurRadius: 8, 
+            color: Colors.grey.withOpacity(0.15),
+            blurRadius: 8,
             offset: const Offset(0, 3),
             spreadRadius: 1,
           ),
@@ -45,7 +45,8 @@ class PaymentDashboard extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: const Icon(Icons.dashboard_outlined, color: pureWhite, size: 28),
+                child: const Icon(Icons.dashboard_outlined,
+                    color: pureWhite, size: 28),
               ),
               const SizedBox(width: 16),
               Column(
@@ -54,15 +55,15 @@ class PaymentDashboard extends StatelessWidget {
                   const Text(
                     'Payment Dashboard',
                     style: TextStyle(
-                      fontSize: 24, 
-                      fontWeight: FontWeight.bold, 
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
                       color: textColor,
                     ),
                   ),
                   Text(
                     'Overview & Analytics',
                     style: TextStyle(
-                      fontSize: 14, 
+                      fontSize: 14,
                       color: textColor.withOpacity(0.7),
                       fontWeight: FontWeight.w500,
                     ),
@@ -72,7 +73,6 @@ class PaymentDashboard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 28),
-          
           IntrinsicHeight(
             child: Row(
               children: [
@@ -83,7 +83,10 @@ class PaymentDashboard extends StatelessWidget {
                     subtitle: 'Successfully processed',
                     icon: Icons.check_circle_outline,
                     color: Colors.green,
-                    gradientColors: [Colors.green.shade400, Colors.green.shade600],
+                    gradientColors: [
+                      Colors.green.shade400,
+                      Colors.green.shade600
+                    ],
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -101,7 +104,6 @@ class PaymentDashboard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          
           Row(
             children: [
               Expanded(
@@ -136,17 +138,28 @@ class PaymentDashboard extends StatelessWidget {
   // Get display name for selected month
   String _getSelectedMonthDisplayName() {
     if (controller.selectedMonth.value.isEmpty) return 'Current Month';
-    
+
     try {
       final parts = controller.selectedMonth.value.split('-');
       if (parts.length == 2) {
         final year = parts[0];
         final month = int.parse(parts[1]);
         final monthNames = [
-          '', 'January', 'February', 'March', 'April', 'May', 'June',
-          'July', 'August', 'September', 'October', 'November', 'December'
+          '',
+          'January',
+          'February',
+          'March',
+          'April',
+          'May',
+          'June',
+          'July',
+          'August',
+          'September',
+          'October',
+          'November',
+          'December'
         ];
-        
+
         if (month >= 1 && month <= 12) {
           return '${monthNames[month]} $year';
         }
@@ -154,7 +167,7 @@ class PaymentDashboard extends StatelessWidget {
     } catch (e) {
       print('Error parsing selected month: $e');
     }
-    
+
     return controller.selectedMonth.value;
   }
 
@@ -213,7 +226,7 @@ class PaymentDashboard extends StatelessWidget {
           const SizedBox(height: 16),
           Text(
             value,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
               color: textColor,
@@ -245,9 +258,9 @@ class PaymentDashboard extends StatelessWidget {
   double _calculateMonthlyRevenue() {
     double total = 0;
     final monthlySubscriptions = controller.getSubscriptionsForSelectedMonth();
-    
+
     for (var subscription in monthlySubscriptions) {
-      if (subscription.status == 'Paid') {
+      if (subscription.status == 'Confirmed') {
         String rawOriginal = subscription.detail.amount;
         print('Original amount: $rawOriginal');
 

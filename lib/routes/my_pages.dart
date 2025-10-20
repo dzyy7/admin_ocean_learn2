@@ -19,7 +19,7 @@ class MyAppPage {
   static final List<GetPage> pages = [
     GetPage(
       name: MyAppRoutes.splashScreen, 
-      page: () => SplashScreen(),
+      page: () => const SplashScreen(),
       binding: AppBinding(),
     ),
     GetPage(
@@ -43,20 +43,20 @@ class MyAppPage {
     ),
     GetPage(
       name: MyAppRoutes.schedulePage, 
-      page: () => SchedulePage(),
+      page: () => const SchedulePage(),
       binding: ScheduleBinding(),
     ),
     GetPage(
       name: MyAppRoutes.paymentPage, 
-      page: () => PaymentPage(),
+      page: () => const PaymentPage(),
     ),
     GetPage(
       name: MyAppRoutes.memberPage, 
-      page: () => MemberPage(),
+      page: () => const MemberPage(),
     ),
     GetPage(
       name: MyAppRoutes.profilePage, 
-      page: () => ProfilePage(),
+      page: () => const ProfilePage(),
     ),
   ];
 }

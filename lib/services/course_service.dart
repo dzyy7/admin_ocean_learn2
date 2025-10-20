@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
 class CourseService {
-  static const String baseUrl = 'https://ocean-learn-api.rplrus.com/api/v1/admin';
+  static const String baseUrl = 'https://api.momentumoceanlearn.com/api/v1/admin';
   List<CourseModel> _courses = [];
 
   String? getToken() {
@@ -33,6 +33,9 @@ class CourseService {
           _courses = (jsonData['data'] as List)
               .map((courseJson) => CourseModel.fromApiJson(courseJson))
               .toList();
+          
+          // Sort courses by date untuk memudahkan pencarian upcoming lesson
+          _courses.sort((a, b) => a.date.compareTo(b.date));
         }
       } else if (response.statusCode == 401) {
         print('Unauthorized access. Token may be expired.');
@@ -49,7 +52,38 @@ class CourseService {
     return _courses;
   }
 
-  Future<CourseModel?> createLesson(
+  // Method untuk mendapatkan upcoming lessons
+  List<CourseModel> getUpcomingLessons() {
+    final now = DateTime.now();
+    return _courses.where((course) {
+      return course.date.isAfter(now) || 
+             course.date.isAtSameMomentAs(now) ||
+             _isSameDay(course.date, now);
+    }).toList();
+  }
+
+  CourseModel? getNextUpcomingLesson() {
+    final upcomingLessons = getUpcomingLessons();
+    if (upcomingLessons.isEmpty) {
+      if (_courses.isNotEmpty) {
+        final sortedCourses = List<CourseModel>.from(_courses);
+        sortedCourses.sort((a, b) => b.date.compareTo(a.date));
+        return sortedCourses.first;
+      }
+      return null;
+    }
+    
+    upcomingLessons.sort((a, b) => a.date.compareTo(b.date));
+    return upcomingLessons.first;
+  }
+
+  bool _isSameDay(DateTime date1, DateTime date2) {
+    return date1.year == date2.year &&
+           date1.month == date2.month &&
+           date1.day == date2.day;
+  }
+
+  Future<CourseModel?> createCourse(
       String title, String description, File pdfFile, DateTime classDate) async {
     final token = getToken();
 
@@ -58,8 +92,8 @@ class CourseService {
       return null;
     }
 
-    if (isLessonExistInWeek(classDate)) {
-      print('A lesson already exists in this week. Cannot create another.');
+    if (isCourseExistInWeek(classDate)) {
+      print('A course already exists in this week. Cannot create another.');
       return null;
     }
 
@@ -95,6 +129,8 @@ class CourseService {
         if (courseData != null) {
           final newCourse = CourseModel.fromApiJson(jsonData);
           _courses.add(newCourse);
+          // Sort ulang setelah menambah course baru
+          _courses.sort((a, b) => a.date.compareTo(b.date));
           return newCourse;
         }
       } else {
@@ -107,35 +143,9 @@ class CourseService {
     return null;
   }
 
-  Future<bool> updateNote(String courseId, String note) async {
-    final token = getToken();
-    if (token == null) return false;
+  
 
-    try {
-      final response = await http.patch(
-        Uri.parse('$baseUrl/course/$courseId'),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode({
-          'note': note,
-        }),
-      );
-
-      if (response.statusCode == 200) {
-        int courseIndex =
-            _courses.indexWhere((course) => course.id == courseId);
-        if (courseIndex != -1) {}
-        return true;
-      }
-    } catch (e) {
-      print('Error updating note: $e');
-    }
-    return false;
-  }
-
-  Future<bool> updateLesson({
+  Future<bool> updateCourse({
     required String courseId,
     required String title,
     required String description,
@@ -144,8 +154,8 @@ class CourseService {
     final token = getToken();
     if (token == null) return false;
 
-    if (isLessonExistInWeek(date, excludeCourseId: courseId)) {
-      print('Another lesson already exists in this week. Cannot update.');
+    if (isCourseExistInWeek(date, excludeCourseId: courseId)) {
+      print('Another course already exists in this week. Cannot update.');
       return false;
     }
 
@@ -175,6 +185,8 @@ class CourseService {
             qrCode: _courses[index].qrCode,
             qrEndDate: _courses[index].qrEndDate,
           );
+          // Sort ulang setelah update
+          _courses.sort((a, b) => a.date.compareTo(b.date));
         }
         return true;
       }
@@ -241,7 +253,7 @@ class CourseService {
         startOfWeek1.day == startOfWeek2.day;
   }
 
-  bool isLessonExistInWeek(DateTime dateToCheck, {String? excludeCourseId}) {
+  bool isCourseExistInWeek(DateTime dateToCheck, {String? excludeCourseId}) {
     return _courses.any((course) {
       if (excludeCourseId != null && course.id == excludeCourseId) {
         return false;

@@ -46,7 +46,6 @@ class MemberStatistics extends StatelessWidget {
                   primaryColor,
                 ),
               ),
-              const SizedBox(width: 12),
               
             ],
           )),

@@ -6,10 +6,9 @@ import 'package:intl/intl.dart';
 import 'package:file_picker/file_picker.dart';
 
 class AddCourseScreen extends StatefulWidget {
-  final CourseService lessonService;
+  final CourseService courseService;
 
-  const AddCourseScreen({Key? key, required this.lessonService})
-      : super(key: key);
+  const AddCourseScreen({super.key, required this.courseService});
 
   @override
   _AddCourseScreenState createState() => _AddCourseScreenState();
@@ -60,7 +59,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
+            colorScheme: const ColorScheme.light(
               primary: primaryColor,
               onPrimary: Colors.white,
               surface: Colors.white,
@@ -80,7 +79,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
         builder: (context, child) {
           return Theme(
             data: Theme.of(context).copyWith(
-              colorScheme: ColorScheme.light(
+              colorScheme: const ColorScheme.light(
                 primary: primaryColor,
               ),
             ),
@@ -97,7 +96,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
           pickedTime.hour,
           pickedTime.minute,
         );
-        
+
         setState(() {
           _selectedClassDate = combinedDateTime;
         });
@@ -151,10 +150,12 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              prefixIcon: const Icon(Icons.title, color: primaryColor),
+                              prefixIcon:
+                                  const Icon(Icons.title, color: primaryColor),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8),
-                                borderSide: const BorderSide(color: primaryColor, width: 2),
+                                borderSide: const BorderSide(
+                                    color: primaryColor, width: 2),
                               ),
                             ),
                             validator: (value) {
@@ -172,10 +173,12 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              prefixIcon: const Icon(Icons.description, color: primaryColor),
+                              prefixIcon: const Icon(Icons.description,
+                                  color: primaryColor),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8),
-                                borderSide: const BorderSide(color: primaryColor, width: 2),
+                                borderSide: const BorderSide(
+                                    color: primaryColor, width: 2),
                               ),
                             ),
                             maxLines: 3,
@@ -194,11 +197,14 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: ListTile(
-                              leading: const Icon(Icons.picture_as_pdf, color: primaryColor),
+                              leading: const Icon(Icons.picture_as_pdf,
+                                  color: primaryColor),
                               title: Text(
                                 _selectedFileName ?? 'Select PDF File',
                                 style: TextStyle(
-                                  color: _selectedFileName != null ? Colors.black : Colors.grey[600],
+                                  color: _selectedFileName != null
+                                      ? Colors.black
+                                      : Colors.grey[600],
                                 ),
                               ),
                               trailing: ElevatedButton(
@@ -253,7 +259,8 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                           const SizedBox(height: 16),
                           Row(
                             children: [
-                              const Icon(Icons.calendar_today, color: primaryColor),
+                              const Icon(Icons.calendar_today,
+                                  color: primaryColor),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Column(
@@ -277,7 +284,8 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                                 ),
                               ),
                               ElevatedButton.icon(
-                                onPressed: () => _selectDate(_selectedClassDate, true),
+                                onPressed: () =>
+                                    _selectDate(_selectedClassDate, true),
                                 icon: const Icon(Icons.edit_calendar),
                                 label: const Text('Change'),
                                 style: ElevatedButton.styleFrom(
@@ -311,13 +319,14 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                       onPressed: _isLoading
                           ? null
                           : () async {
-                              if (_formKey.currentState!.validate() && _selectedPdfFile != null) {
+                              if (_formKey.currentState!.validate() &&
+                                  _selectedPdfFile != null) {
                                 setState(() {
                                   _isLoading = true;
                                 });
 
                                 final result =
-                                    await widget.lessonService.createLesson(
+                                    await widget.courseService.createCourse(
                                   _titleController.text,
                                   _descriptionController.text,
                                   _selectedPdfFile!,
@@ -328,7 +337,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                                   _isLoading = false;
                                 });
                                 if (result == null) {
-                                  if (widget.lessonService.isLessonExistInWeek(
+                                  if (widget.courseService.isCourseExistInWeek(
                                       _selectedClassDate)) {
                                     showDialog(
                                       context: context,
@@ -344,7 +353,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                                           decoration: BoxDecoration(
                                             borderRadius:
                                                 BorderRadius.circular(20),
-                                            gradient: LinearGradient(
+                                            gradient: const LinearGradient(
                                               begin: Alignment.topLeft,
                                               end: Alignment.bottomRight,
                                               colors: [
@@ -359,11 +368,11 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                                               Container(
                                                 padding:
                                                     const EdgeInsets.all(16),
-                                                decoration: BoxDecoration(
+                                                decoration: const BoxDecoration(
                                                   color: primaryColor,
                                                   shape: BoxShape.circle,
                                                 ),
-                                                child: Icon(
+                                                child: const Icon(
                                                   Icons.calendar_today_outlined,
                                                   color: pureWhite,
                                                   size: 32,
@@ -371,7 +380,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                                               ),
                                               const SizedBox(height: 16),
                                               const Text(
-                                                'Lesson Already Exists',
+                                                'Course Already Exists',
                                                 style: TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.bold,
@@ -433,13 +442,13 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                                   }
                                 }
                                 if (result != null) {
-                                  Navigator.of(context).pop(
-                                      true); 
+                                  Navigator.of(context).pop(true);
                                 }
                               } else if (_selectedPdfFile == null) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                    content: const Text("Please select a PDF file"),
+                                    content:
+                                        const Text("Please select a PDF file"),
                                     backgroundColor: Colors.red[600],
                                     behavior: SnackBarBehavior.floating,
                                     shape: RoundedRectangleBorder(
@@ -450,9 +459,9 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                               }
                             },
                       label: _isLoading
-                          ? Row(
+                          ? const Row(
                               mainAxisSize: MainAxisSize.min,
-                              children: const [
+                              children: [
                                 SizedBox(
                                   width: 20,
                                   height: 20,

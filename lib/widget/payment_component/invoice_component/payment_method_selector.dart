@@ -6,9 +6,9 @@ class PaymentMethodSelector extends StatelessWidget {
   final String paymentMethod;
 
   const PaymentMethodSelector({
-    Key? key,
+    super.key,
     required this.paymentMethod,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -56,10 +56,10 @@ class PaymentMethodOption extends StatelessWidget {
   final bool isSelected;
 
   const PaymentMethodOption({
-    Key? key,
+    super.key,
     required this.method,
     required this.isSelected,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

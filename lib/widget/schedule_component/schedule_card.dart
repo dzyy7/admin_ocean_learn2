@@ -8,13 +8,13 @@ class ScheduleCard extends StatelessWidget {
   final VoidCallback? onViewDetails;
 
   const ScheduleCard({
-    Key? key,
+    super.key,
     required this.weekNumber,
     required this.date,
     required this.isPast, 
     this.title,
     this.onViewDetails,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -59,9 +59,9 @@ class ScheduleCard extends StatelessWidget {
                 color: const Color(0xFFE1F5FE),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Row(
+              child: const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
+                children: [
                   Icon(Icons.info_outline, size: 18, color: Colors.blue),
                   SizedBox(width: 8),
                   Text(

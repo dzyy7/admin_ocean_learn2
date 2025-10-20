@@ -8,11 +8,17 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:screenshot/screenshot.dart';
+import 'dart:io';
+import 'dart:typed_data';
 
 class PaymentController extends GetxController {
   final isLoading = true.obs;
   final error = ''.obs;
   final isConfirming = false.obs;
+  final isDownloading = false.obs;
 
   final subscriptions = <SubscriptionModel>[].obs;
   final subscriptionsByMonth = <String, List<SubscriptionModel>>{}.obs;
@@ -132,7 +138,6 @@ class PaymentController extends GetxController {
   }
 
   void viewInvoice(SubscriptionModel subscription) {
-
     final paymentMethod = subscription.detail.paymentMethod.toLowerCase();
 
     if (paymentMethod == 'cash' || paymentMethod == 'transfer') {
@@ -147,10 +152,86 @@ class PaymentController extends GetxController {
     } else {
       Get.snackbar(
         'Info',
-        ' invoice view is disabled in this version.',
+        'Online invoice view is disabled in this version.',
         backgroundColor: Colors.grey,
         colorText: Colors.white,
       );
+    }
+  }
+
+  Future<bool> downloadInvoiceAsImage(
+    ScreenshotController screenshotController,
+    SubscriptionModel subscription,
+  ) async {
+    try {
+      isDownloading.value = true;
+
+      // Request storage permission
+      var status = await Permission.storage.status;
+      if (!status.isGranted) {
+        status = await Permission.storage.request();
+        if (!status.isGranted) {
+          Get.snackbar(
+            'Permission Denied',
+            'Storage permission is required to download invoice',
+            backgroundColor: Colors.red,
+            colorText: Colors.white,
+          );
+          return false;
+        }
+      }
+
+      // Capture screenshot
+      final Uint8List? imageBytes = await screenshotController.capture();
+
+      if (imageBytes != null) {
+        // Get directory
+        Directory? directory;
+        if (Platform.isAndroid) {
+          directory = Directory('/storage/emulated/0/Download');
+          if (!await directory.exists()) {
+            directory = await getExternalStorageDirectory();
+          }
+        } else {
+          directory = await getApplicationDocumentsDirectory();
+        }
+
+        if (directory != null) {
+          // Create filename with subscription info
+          final String timestamp = DateTime.now().millisecondsSinceEpoch.toString();
+          final String username = getUsernameFromId(subscription.userId)
+              .replaceAll(' ', '_')
+              .replaceAll(RegExp(r'[^\w\s]+'), '');
+          final String fileName = 'invoice_${subscription.month}_${username}_$timestamp.png';
+          final String filePath = '${directory.path}/$fileName';
+
+          // Save file
+          final File file = File(filePath);
+          await file.writeAsBytes(imageBytes);
+
+          Get.snackbar(
+            'Download Success',
+            'Invoice saved to Downloads folder',
+            backgroundColor: Colors.green,
+            colorText: Colors.white,
+            duration: const Duration(seconds: 3),
+          );
+
+          return true;
+        }
+      }
+
+      return false;
+    } catch (e) {
+      Get.snackbar(
+        'Download Failed',
+        'Failed to save invoice: ${e.toString()}',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      return false;
+    } finally {
+      isDownloading.value = false;
     }
   }
 
@@ -175,7 +256,7 @@ class PaymentController extends GetxController {
                       ),
                     ),
                     errorWidget: (context, url, error) => const Center(
-                      child: Icon(Icons.error_outline,
+                      child: Icon(Icons.error_outline, 
                           color: Colors.white, size: 48),
                     ),
                   ),
@@ -200,6 +281,18 @@ class PaymentController extends GetxController {
     try {
       final username = getUsernameFromId(subscription.userId);
       final paymentMethod = subscription.detail.paymentMethod;
+      final status = subscription.status.toLowerCase();
+
+      // Only allow confirmation when status is 'paid'
+      if (status != 'paid') {
+        Get.snackbar(
+          'Invalid Status',
+          'Payment can only be confirmed when status is "Paid"',
+          backgroundColor: Colors.orange,
+          colorText: Colors.white,
+        );
+        return;
+      }
 
       bool? shouldConfirm = await Get.dialog<bool>(
         AlertDialog(
@@ -209,13 +302,19 @@ class PaymentController extends GetxController {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                  'Are you sure you want to confirm this ${paymentMethod} payment?'),
+                  'Are you sure you want to confirm this $paymentMethod payment?'),
               const SizedBox(height: 8),
               Text('Username: $username',
                   style: const TextStyle(fontWeight: FontWeight.bold)),
               Text('Amount: Rp ${subscription.detail.amount}',
                   style: const TextStyle(fontWeight: FontWeight.bold)),
               Text('Payment Method: ${paymentMethod.toUpperCase()}'),
+              Text('Current Status: ${subscription.status}',
+                  style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.orange)),
+              const SizedBox(height: 8),
+              const Text(
+                  'This will change the status to "Confirmed".',
+                  style: TextStyle(color: Colors.green, fontSize: 12)),
               if (paymentMethod.toLowerCase() == 'transfer') ...[
                 const SizedBox(height: 8),
                 const Text(

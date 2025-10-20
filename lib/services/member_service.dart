@@ -5,7 +5,7 @@ import 'dart:convert';
 import 'dart:async';
 
 class MemberService {
-  static const String baseUrl = 'https://ocean-learn-api.rplrus.com/api/v1';
+  static const String baseUrl = 'https://api.momentumoceanlearn.com/api/v1';
 
   static Future<MemberResponseModel> getMembers() async {
     try {

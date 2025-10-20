@@ -20,7 +20,7 @@ class AddCourseButton extends StatelessWidget {
         final result = await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => AddCourseScreen(lessonService: courseService),
+            builder: (context) => AddCourseScreen(courseService: courseService),
           ),
         );
         if (result == true) onCourseAdded();

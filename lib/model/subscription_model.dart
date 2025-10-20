@@ -1,4 +1,3 @@
-import 'package:admin_ocean_learn2/services/subscription_service.dart';
 
 class SubscriptionModel {
   final int id;

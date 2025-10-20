@@ -11,16 +11,16 @@ import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class LessonCard extends StatelessWidget {
+class CourseCard extends StatelessWidget {
   final CourseModel course;
 
-  const LessonCard({Key? key, required this.course}) : super(key: key);
+  const CourseCard({super.key, required this.course});
 
   Future<void> _downloadAndOpenPdf(BuildContext context) async {
-    final token = await UserStorage
+    final token = UserStorage
         .getToken(); // sesuaikan dengan tempat kamu simpan token
     final url =
-        'https://ocean-learn-api.rplrus.com/api/v1/courses/${course.id}/download';
+        'https://api.momentumoceanlearn.com/api/v1/courses/${course.id}/download';
 
     try {
       final response = await http.get(
@@ -101,7 +101,7 @@ class LessonCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(24),
                 child: Center(
                   child: Text(
-                    "Let's check the lessons!",
+                    "Let's check the course!",
                     style: GoogleFonts.poppins(
                       color: textColor,
                       fontWeight: FontWeight.bold,
@@ -112,7 +112,7 @@ class LessonCard extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: 14),
+          const SizedBox(height: 14),
         ],
       ),
     );

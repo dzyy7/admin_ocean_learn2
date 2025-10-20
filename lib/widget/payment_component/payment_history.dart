@@ -8,10 +8,10 @@ class PaymentHistory extends StatelessWidget {
   final PaymentController controller;
 
   const PaymentHistory({
-    Key? key,
+    super.key,
     required this.subscription,
     required this.controller,
-  }) : super(key: key);
+  });
 
   // Helper method untuk mapping payment method
   String _getDisplayPaymentMethod(String originalMethod) {
@@ -23,14 +23,25 @@ class PaymentHistory extends StatelessWidget {
     }
   }
 
+  // Helper method to check if confirm button should be shown
+  bool _shouldShowConfirmButton() {
+    final paymentMethod = subscription.detail.paymentMethod.toLowerCase();
+    final status = subscription.status.toLowerCase();
+    
+    // Show confirm button for cash and transfer when status is 'paid'
+    return (paymentMethod == 'cash' || paymentMethod == 'transfer') && 
+           status == 'paid';
+  }
+
   @override
   Widget build(BuildContext context) {
     final username = controller.getUsernameFromId(subscription.userId);
     final userEmail = controller.getUserEmailFromId(subscription.userId);
     final userRole = controller.getUserRoleFromId(subscription.userId);
     final paymentMethod = subscription.detail.paymentMethod.toLowerCase();
-    final displayPaymentMethod = _getDisplayPaymentMethod(subscription.detail.paymentMethod);
-    
+    final displayPaymentMethod =
+        _getDisplayPaymentMethod(subscription.detail.paymentMethod);
+
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       elevation: 2,
@@ -84,7 +95,6 @@ class PaymentHistory extends StatelessWidget {
                 ),
               ],
             ),
-
             const SizedBox(height: 12),
             Row(
               children: [
@@ -104,9 +114,7 @@ class PaymentHistory extends StatelessWidget {
                 ),
               ],
             ),
-
             const SizedBox(height: 8),
-
             Row(
               children: [
                 Expanded(
@@ -118,19 +126,17 @@ class PaymentHistory extends StatelessWidget {
                 ),
               ],
             ),
-
             const SizedBox(height: 12),
-
             Row(
               children: [
-                if ((paymentMethod == 'cash' || paymentMethod == 'transfer') &&
-                    subscription.status.toLowerCase() == 'pending')
+                // Show confirm button only when status is 'paid'
+                if (_shouldShowConfirmButton())
                   Expanded(
                     child: ElevatedButton.icon(
                       onPressed: () => controller.confirmPayment(subscription),
                       icon: const Icon(Icons.check, color: Colors.white),
                       label: Text(
-                        'Confirm ${displayPaymentMethod.toUpperCase()}', 
+                        'Confirm ${displayPaymentMethod.toUpperCase()}',
                         style: const TextStyle(color: Colors.white),
                       ),
                       style: ElevatedButton.styleFrom(
@@ -143,11 +149,8 @@ class PaymentHistory extends StatelessWidget {
                       ),
                     ),
                   ),
-
-                if ((paymentMethod == 'cash' || paymentMethod == 'transfer') &&
-                    subscription.status.toLowerCase() == 'pending')
+                if (_shouldShowConfirmButton())
                   const SizedBox(width: 8),
-
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: subscription.status.toLowerCase() == 'canceled'
@@ -219,10 +222,14 @@ class PaymentHistory extends StatelessWidget {
   Color _getStatusColor(String status) {
     switch (status.toLowerCase()) {
       case 'paid':
-        return Colors.green;
+        return Colors.orange; // Changed to orange to distinguish from confirmed
       case 'pending':
-        return Colors.orange;
+        return Colors.grey;
+      case 'confirmed':
+        return Colors.green; // Confirmed is now green (success)
       case 'failed':
+        return Colors.red;
+      case 'canceled':
         return Colors.red;
       default:
         return Colors.grey;

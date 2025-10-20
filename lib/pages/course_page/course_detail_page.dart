@@ -9,20 +9,20 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class CourseDetailPage extends StatefulWidget {
   final CourseModel course;
-  final CourseService lessonService;
+  final CourseService courseService;
 
   const CourseDetailPage({
-    Key? key,
+    super.key,
     required this.course,
-    required this.lessonService,
-  }) : super(key: key);
+    required this.courseService,
+  });
 
   @override
   State<CourseDetailPage> createState() => _CourseDetailPageState();
 }
 
 class _CourseDetailPageState extends State<CourseDetailPage> {
-  bool _isNoteVisible = false;
+  final bool _isNoteVisible = false;
   bool _isLoading = false;
   bool _isAdmin = false;
   late CourseModel _currentCourse;
@@ -48,7 +48,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
       _isLoading = true;
     });
     
-    final courseDetail = await widget.lessonService.getCourseDetail(_currentCourse.id);
+    final courseDetail = await widget.courseService.getCourseDetail(_currentCourse.id);
     
     if (courseDetail != null) {
       setState(() {
@@ -115,7 +115,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
-                  LessonCard(course: _currentCourse),
+                  CourseCard(course: _currentCourse),
                 ],
               ),
             ),

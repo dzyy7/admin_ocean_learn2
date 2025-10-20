@@ -59,10 +59,10 @@ class SchedulePage extends StatelessWidget {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Column(
+                  child: const Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         "Weekly Schedule Rules:",
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
@@ -70,11 +70,11 @@ class SchedulePage extends StatelessWidget {
                           color: primaryColor,
                         ),
                       ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        "• Each week can have only one lesson or none\n"
-                        "• Lessons are shown on the calendar with blue circles\n"
-                        "• Tap on a lesson date in the calendar to view details",
+                      SizedBox(height: 8),
+                      Text(
+                        "• Each week can have only one course or none\n"
+                        "• courses are shown on the calendar with blue circles\n"
+                        "• Tap on a course date in the calendar to view details",
                         style: TextStyle(fontSize: 14),
                       ),
                     ],
@@ -150,14 +150,14 @@ class SchedulePage extends StatelessWidget {
                     MaterialPageRoute(
                       builder: (context) => CourseDetailPage(
                         course: course,
-                        lessonService: controller.courseService,
+                        courseService: controller.courseService,
                       ),
                     ),
                   ).then((_) => controller.loadCourses());
                 },
               ),
             );
-          }).toList(),
+          }),
         ],
       );
     });

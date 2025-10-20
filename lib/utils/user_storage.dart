@@ -9,7 +9,7 @@ class UserStorage {
   static const String ROLE_KEY = 'role';
 
   static Future<void> init() async {
-    await GetStorage.init('user_data');
+    await GetStorage.init(' ');
   }
   
   static Future<void> saveUserData({
