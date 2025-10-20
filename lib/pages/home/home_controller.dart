@@ -42,10 +42,6 @@ class HomeController extends GetxController {
     loadInitialCourses();
   }
 
-  @override
-  void onClose() {
-    super.onClose();
-  }
 
   Future<void> loadUserName() async {
     String? userName = UserStorage.getName();

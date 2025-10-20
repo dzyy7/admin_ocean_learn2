@@ -1,6 +1,5 @@
 import 'package:admin_ocean_learn2/model/member_model.dart';
 import 'package:admin_ocean_learn2/pages/member/member_controller.dart';
-import 'package:admin_ocean_learn2/services/avatar_service.dart';
 import 'package:admin_ocean_learn2/utils/color_palette.dart';
 import 'package:admin_ocean_learn2/widget/member_component/avatar_widget.dart';
 import 'package:flutter/material.dart';

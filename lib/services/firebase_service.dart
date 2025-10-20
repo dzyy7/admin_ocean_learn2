@@ -24,7 +24,7 @@ class FirebaseService {
       }
 
       final response = await http.post(
-        Uri.parse('https://ocean-learn-api.rplrus.com/api/v1/user/fcm-token'),
+        Uri.parse(' https://api.momentumoceanlearn.com/api/v1/user/fcm-token'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',

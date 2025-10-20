@@ -14,7 +14,7 @@ class MyButton extends StatelessWidget {
   final BoxBorder? border;
   
   const MyButton({
-    Key? key,
+    super.key,
     required this.text,
     required this.onPressed,
     this.height,
@@ -26,7 +26,7 @@ class MyButton extends StatelessWidget {
     this.fontWeight = FontWeight.w500,
     this.padding = const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
     this.border,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +36,7 @@ class MyButton extends StatelessWidget {
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: borderRadius != null ? BorderRadius.circular(borderRadius!) : BorderRadius.circular(30.0),
-        border: border ?? Border.all(color: Color(0xFF70C5E5), width: 1.0),
+        border: border ?? Border.all(color: const Color(0xFF70C5E5), width: 1.0),
       ),
       child: Material(
         color: Colors.transparent,

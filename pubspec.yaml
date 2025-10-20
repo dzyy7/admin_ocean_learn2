@@ -2,7 +2,7 @@ name: admin_ocean_learn2
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -31,7 +31,6 @@ dependencies:
   flutter:
     sdk: flutter
 
-
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
@@ -49,7 +48,7 @@ dependencies:
   firebase_messaging: any
   flutter_local_notifications: any
   cached_network_image: any
-  file_picker: any
+  file_picker: ^10.3.2
   permission_handler: any
   open_file: any
   screenshot: any
@@ -66,18 +65,16 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^4.0.0
 
-flutter_launcher_icons:
+flutter_launcher_icons: 
   android: "launcher_icon"
   ios: true
   image_path: assets/images/logo_dark.png
-  
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
@@ -85,8 +82,8 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-     - assets/svg/
-     - assets/images/
+    - assets/svg/
+    - assets/images/
 
   #   - images/a_dot_ham.jpeg
 

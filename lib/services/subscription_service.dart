@@ -4,8 +4,7 @@ import 'package:admin_ocean_learn2/model/subscription_model.dart';
 import 'package:admin_ocean_learn2/utils/user_storage.dart';
 
 class SubscriptionService {
-  static const String baseUrl = 'https://ocean-learn-api.rplrus.com/api/v1/admin';
-  static const String apiBaseUrl = 'https://ocean-learn-api.rplrus.com/api/v1';
+  static const String baseUrl = 'https://api.momentumoceanlearn.com/api/v1';
   
   // Helper method to get headers with authorization
   static Map<String, String> _getAuthHeaders() {
@@ -34,7 +33,7 @@ class SubscriptionService {
   static Future<List<SubscriptionModel>> getSubscriptions() async {
     try {
       final response = await http.get(
-        Uri.parse('$baseUrl/subscription/index'),
+        Uri.parse('$baseUrl/admin/subscription/index'),
         headers: _getAuthHeaders(),
       );
       
@@ -99,7 +98,7 @@ class SubscriptionService {
   static Future<bool> confirmPayment(String externalId, String paymentMethod) async {
     try {
       final response = await http.post(
-        Uri.parse('$baseUrl/subscription/confirm'),
+        Uri.parse('$baseUrl/admin/subscription/confirm'),
         headers: _getAuthHeaders(),
         body: json.encode({
           'external_id': externalId,
@@ -128,7 +127,7 @@ class SubscriptionService {
   static Future<http.Response> getProofImage(String proofPath) async {
     try {
       final response = await http.get(
-        Uri.parse('$apiBaseUrl/$proofPath'),
+        Uri.parse('$baseUrl/$proofPath'),
         headers: _getImageHeaders(),
       );
       
@@ -143,7 +142,7 @@ class SubscriptionService {
   }
 
   static String getProofUrl(String proofPath) {
-    return '$apiBaseUrl/$proofPath';
+    return '$baseUrl/$proofPath';
   }
 
   static Map<String, String> getImageHeaders() {

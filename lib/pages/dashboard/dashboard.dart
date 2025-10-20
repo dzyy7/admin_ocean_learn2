@@ -9,22 +9,22 @@ import '../payment/payment_page.dart';
 import '../profile/profile_page.dart';
 
 class DashboardPage extends StatelessWidget {
-  DashboardPage({super.key});
+  const DashboardPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     final DashboardController ctrl = Get.find<DashboardController>();
-    final List<Widget> _menus = [
+    final List<Widget> menus = [
       HomePage(),
-      SchedulePage(),
-      PaymentPage(),
-      MemberPage(),
-      ProfilePage(),
+      const SchedulePage(),
+      const PaymentPage(),
+      const MemberPage(),
+      const ProfilePage(),
     ];
 
     return Obx(() => Scaffold(
-          body: _menus[ctrl.selectedIndex.value],
-          drawer: AppDrawer(),
+          body: menus[ctrl.selectedIndex.value],
+          drawer: const AppDrawer(),
         ));
   }
 }

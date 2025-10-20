@@ -61,7 +61,7 @@ class FeaturedLessonCard extends StatelessWidget {
     final date = hasLesson
         ? DateFormat('MMMM d yyyy').format(upcomingLesson.date)
         : 'Add your first lesson';
-    final imagePath = 'assets/svg/home1.svg';
+    const imagePath = 'assets/svg/home1.svg';
 
     return GestureDetector(
       onTap: hasLesson

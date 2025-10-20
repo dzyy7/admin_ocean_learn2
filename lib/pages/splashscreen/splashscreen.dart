@@ -81,7 +81,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                 height: 200,
               ),
               const SizedBox(height: 20),
-              Text(
+              const Text(
                 'Ocean Learn Admin',
                 style: TextStyle(
                   fontSize: 24,

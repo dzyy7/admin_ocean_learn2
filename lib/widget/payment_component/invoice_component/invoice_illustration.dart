@@ -6,13 +6,13 @@ class InvoiceIllustration extends StatelessWidget {
   final String paymentMethod;
 
   const InvoiceIllustration({
-    Key? key,
+    super.key,
     required this.paymentMethod,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: 200,
       width: double.infinity,
       child: Center(

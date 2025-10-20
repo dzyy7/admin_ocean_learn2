@@ -281,6 +281,18 @@ class PaymentController extends GetxController {
     try {
       final username = getUsernameFromId(subscription.userId);
       final paymentMethod = subscription.detail.paymentMethod;
+      final status = subscription.status.toLowerCase();
+
+      // Only allow confirmation when status is 'paid'
+      if (status != 'paid') {
+        Get.snackbar(
+          'Invalid Status',
+          'Payment can only be confirmed when status is "Paid"',
+          backgroundColor: Colors.orange,
+          colorText: Colors.white,
+        );
+        return;
+      }
 
       bool? shouldConfirm = await Get.dialog<bool>(
         AlertDialog(
@@ -290,13 +302,19 @@ class PaymentController extends GetxController {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                  'Are you sure you want to confirm this ${paymentMethod} payment?'),
+                  'Are you sure you want to confirm this $paymentMethod payment?'),
               const SizedBox(height: 8),
               Text('Username: $username',
                   style: const TextStyle(fontWeight: FontWeight.bold)),
               Text('Amount: Rp ${subscription.detail.amount}',
                   style: const TextStyle(fontWeight: FontWeight.bold)),
               Text('Payment Method: ${paymentMethod.toUpperCase()}'),
+              Text('Current Status: ${subscription.status}',
+                  style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.orange)),
+              const SizedBox(height: 8),
+              const Text(
+                  'This will change the status to "Confirmed".',
+                  style: TextStyle(color: Colors.green, fontSize: 12)),
               if (paymentMethod.toLowerCase() == 'transfer') ...[
                 const SizedBox(height: 8),
                 const Text(

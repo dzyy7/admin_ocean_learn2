@@ -12,17 +12,17 @@ class CourseDetailPage extends StatefulWidget {
   final CourseService courseService;
 
   const CourseDetailPage({
-    Key? key,
+    super.key,
     required this.course,
     required this.courseService,
-  }) : super(key: key);
+  });
 
   @override
   State<CourseDetailPage> createState() => _CourseDetailPageState();
 }
 
 class _CourseDetailPageState extends State<CourseDetailPage> {
-  bool _isNoteVisible = false;
+  final bool _isNoteVisible = false;
   bool _isLoading = false;
   bool _isAdmin = false;
   late CourseModel _currentCourse;

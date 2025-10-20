@@ -11,10 +11,10 @@ class TransferProofSection extends StatelessWidget {
   final PaymentController controller;
 
   const TransferProofSection({
-    Key? key,
+    super.key,
     required this.subscription,
     required this.controller,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -39,10 +39,10 @@ class TransferProofWithImage extends StatelessWidget {
   final PaymentController controller;
 
   const TransferProofWithImage({
-    Key? key,
+    super.key,
     required this.proofUrl,
     required this.controller,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -162,7 +162,7 @@ class TransferProofWithImage extends StatelessWidget {
 }
 
 class TransferProofPlaceholder extends StatelessWidget {
-  const TransferProofPlaceholder({Key? key}) : super(key: key);
+  const TransferProofPlaceholder({super.key});
 
   @override
   Widget build(BuildContext context) {

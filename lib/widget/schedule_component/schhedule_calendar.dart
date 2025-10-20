@@ -9,9 +9,9 @@ class CalendarWidget extends StatelessWidget {
   final ScheduleController controller;
   
   const CalendarWidget({
-    Key? key,
+    super.key,
     required this.controller,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

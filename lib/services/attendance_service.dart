@@ -1,12 +1,11 @@
 import 'dart:convert';
 import 'package:admin_ocean_learn2/model/attendance_model.dart';
-import 'package:admin_ocean_learn2/model/member_model.dart';
 import 'package:admin_ocean_learn2/services/member_service.dart';
 import 'package:admin_ocean_learn2/utils/user_storage.dart';
 import 'package:http/http.dart' as http;
 
 class AttendanceService {
-  static const String baseUrl = 'https://ocean-learn-api.rplrus.com/api/v1/admin';
+  static const String baseUrl = ' https://api.momentumoceanlearn.com/api/v1/admin';
 
   static Future<AttendanceResponseModel> getAttendance(String courseId) async {
     try {

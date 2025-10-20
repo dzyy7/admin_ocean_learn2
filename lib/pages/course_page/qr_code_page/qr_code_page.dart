@@ -12,7 +12,7 @@ import 'package:intl/intl.dart';
 class QRCodePage extends StatefulWidget {
   final CourseModel course;
 
-  const QRCodePage({Key? key, required this.course}) : super(key: key);
+  const QRCodePage({super.key, required this.course});
 
   @override
   State<QRCodePage> createState() => _QRCodePageState();
@@ -45,6 +45,72 @@ class _QRCodePageState extends State<QRCodePage> {
     }
   }
 
+  // Method untuk menentukan status QR Code berdasarkan waktu
+  Map<String, dynamic> _getQRStatus() {
+    final now = DateTime.now();
+    final classDate = widget.course.date; // class_date
+    final endDate = widget.course.qrEndDate; // end_at
+    
+    bool isLocked = true;
+    String statusText = 'QR Code not available';
+    Color statusColor = Colors.grey;
+    
+    if (endDate != null) {
+      if (now.isBefore(classDate)) {
+        // Sebelum class_date - QR terkunci
+        final difference = classDate.difference(now);
+        if (difference.inDays > 0) {
+          statusText = 'QR will open in ${difference.inDays} days';
+        } else if (difference.inHours > 0) {
+          statusText = 'QR will open in ${difference.inHours} hours';
+        } else {
+          statusText = 'QR will open in ${difference.inMinutes} minutes';
+        }
+        statusColor = Colors.orange;
+        isLocked = true;
+      } else if (now.isAfter(classDate) && now.isBefore(endDate)) {
+        // Antara class_date dan end_at - QR terbuka
+        final difference = endDate.difference(now);
+        if (difference.inHours > 0) {
+          statusText = 'QR active - expires in ${difference.inHours} hours';
+        } else {
+          statusText = 'QR active - expires in ${difference.inMinutes} minutes';
+        }
+        statusColor = Colors.green;
+        isLocked = false;
+      } else {
+        // Setelah end_at - QR terkunci lagi
+        statusText = 'QR Code has expired';
+        statusColor = Colors.red;
+        isLocked = true;
+      }
+    } else {
+      // Fallback jika tidak ada end_at
+      if (now.isAfter(classDate)) {
+        statusText = 'QR Code is active';
+        statusColor = Colors.green;
+        isLocked = false;
+      } else {
+        final difference = classDate.difference(now);
+        if (difference.inDays > 0) {
+          statusText = 'QR will open in ${difference.inDays} days';
+        } else if (difference.inHours > 0) {
+          statusText = 'QR will open in ${difference.inHours} hours';
+        } else {
+          statusText = 'QR will open in ${difference.inMinutes} minutes';
+        }
+        statusColor = Colors.orange;
+        isLocked = true;
+      }
+    }
+    
+    return {
+      'isLocked': isLocked,
+      'statusText': statusText,
+      'statusColor': statusColor,
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     String qrDecodedData = '';
@@ -57,34 +123,11 @@ class _QRCodePageState extends State<QRCodePage> {
       }
     }
 
-    String expiryText = 'No expiration';
-    Color expiryColor = Colors.black54;
-
-    if (widget.course.qrEndDate != null) {
-      final now = DateTime.now();
-      if (widget.course.qrEndDate!.isAfter(now)) {
-        final difference = widget.course.qrEndDate!.difference(now);
-        if (difference.inDays > 0) {
-          expiryText = 'Expires in ${difference.inDays} days';
-        } else if (difference.inHours > 0) {
-          expiryText = 'Expires in ${difference.inHours} hours';
-        } else {
-          expiryText = 'Expires in ${difference.inMinutes} minutes';
-        }
-        expiryColor = Colors.green;
-      } else {
-        expiryText = 'QR Code has expired';
-        expiryColor = Colors.red;
-      }
-    }
-    bool isLocked = true;
-
-    final now = DateTime.now();
-    final daysDiff = widget.course.date.difference(now).inDays;
-
-    if (daysDiff <= 6 && daysDiff >= 0) {
-      isLocked = false;
-    }
+    // Mendapatkan status QR Code
+    final qrStatus = _getQRStatus();
+    final bool isLocked = qrStatus['isLocked'];
+    final String statusText = qrStatus['statusText'];
+    final Color statusColor = qrStatus['statusColor'];
 
     return Scaffold(
       backgroundColor: netralColor,
@@ -95,9 +138,9 @@ class _QRCodePageState extends State<QRCodePage> {
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text(
+        title: const Text(
           "Course QR Code",
-          style: const TextStyle(
+          style: TextStyle(
             color: Colors.black,
             fontWeight: FontWeight.bold,
           ),
@@ -138,6 +181,23 @@ class _QRCodePageState extends State<QRCodePage> {
                     ),
                     textAlign: TextAlign.center,
                   ),
+                  const SizedBox(height: 8),
+                  // Menampilkan informasi jadwal kelas
+                  Text(
+                    'Class: ${DateFormat('dd MMM yyyy, HH:mm').format(widget.course.date)}',
+                    style: GoogleFonts.poppins(
+                      fontSize: 12,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                  if (widget.course.qrEndDate != null)
+                    Text(
+                      'End: ${DateFormat('dd MMM yyyy, HH:mm').format(widget.course.qrEndDate!)}',
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        color: Colors.grey[600],
+                      ),
+                    ),
                   const SizedBox(height: 24),
                   if (qrDecodedData.isNotEmpty)
                     Stack(
@@ -158,8 +218,25 @@ class _QRCodePageState extends State<QRCodePage> {
                                 width: 200,
                                 height: 200,
                                 color: Colors.black.withOpacity(0.2),
-                                child: Icon(Icons.lock,
-                                    color: Colors.white, size: 48),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(
+                                      Icons.lock,
+                                      color: Colors.white,
+                                      size: 48,
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      'LOCKED',
+                                      style: GoogleFonts.poppins(
+                                        color: Colors.white,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           )
@@ -174,12 +251,31 @@ class _QRCodePageState extends State<QRCodePage> {
                       ),
                     ),
                   const SizedBox(height: 16),
-                  Text(
-                    expiryText,
-                    style: GoogleFonts.poppins(
-                      color: expiryColor,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: statusColor.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: statusColor.withOpacity(0.3)),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          isLocked ? Icons.lock : Icons.lock_open,
+                          size: 16,
+                          color: statusColor,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          statusText,
+                          style: GoogleFonts.poppins(
+                            color: statusColor,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -205,7 +301,7 @@ class _QRCodePageState extends State<QRCodePage> {
                 children: [
                   Row(
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.people_outline,
                         color: primaryColor,
                         size: 24,

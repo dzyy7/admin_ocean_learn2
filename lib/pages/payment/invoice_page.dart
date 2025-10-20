@@ -19,10 +19,10 @@ class InvoicePage extends StatefulWidget {
   final PaymentController controller;
 
   const InvoicePage({
-    Key? key,
+    super.key,
     required this.subscription,
     required this.controller,
-  }) : super(key: key);
+  });
 
   @override
   State<InvoicePage> createState() => _InvoicePageState();

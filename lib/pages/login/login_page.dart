@@ -9,6 +9,8 @@ import 'login_controller.dart';
 class LoginPage extends StatelessWidget {
   final LoginController _loginController = Get.put(LoginController());
 
+  LoginPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,14 +23,21 @@ class LoginPage extends StatelessWidget {
             padding: const EdgeInsets.only(top: 50),
             child: Column(
               children: [
-                MyText(text: 'Welcome Back!', fontsize: 26, color: textColor, textAlign: TextAlign.center, fontWeight: FontWeight.bold, fontfamily: 'poppins',),
+                const MyText(
+                  text: 'Welcome Back!',
+                  fontsize: 26,
+                  color: textColor,
+                  textAlign: TextAlign.center,
+                  fontWeight: FontWeight.bold,
+                  fontfamily: 'poppins',
+                ),
                 const SizedBox(height: 10),
                 SvgPicture.asset(
                   'assets/svg/login_vector.svg',
                   width: 300,
                   height: 300,
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Container(
                   padding: const EdgeInsets.all(20),
                   width: 400,
@@ -49,13 +58,15 @@ class LoginPage extends StatelessWidget {
                     children: [
                       TextField(
                         controller: _loginController.emailController,
-                        decoration: _buildInputDecoration('username', Icons.person_outline),
+                        decoration: _buildInputDecoration(
+                            'username', Icons.person_outline),
                       ),
                       const SizedBox(height: 16),
                       TextField(
                         controller: _loginController.passwordController,
                         obscureText: true,
-                        decoration: _buildInputDecoration('password', Icons.lock_outline),
+                        decoration: _buildInputDecoration(
+                            'password', Icons.lock_outline),
                       ),
                       const SizedBox(height: 16),
                       _buildRememberAndForgotRow(),
@@ -78,10 +89,7 @@ class LoginPage extends StatelessWidget {
   InputDecoration _buildInputDecoration(String hintText, IconData icon) {
     return InputDecoration(
       hintText: hintText,
-      hintStyle: GoogleFonts.poppins(
-        fontWeight: FontWeight.w200, 
-        fontSize: 14
-      ),
+      hintStyle: GoogleFonts.poppins(fontWeight: FontWeight.w200, fontSize: 14),
       suffixIcon: Icon(icon),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
@@ -111,12 +119,13 @@ class LoginPage extends StatelessWidget {
         Row(
           children: [
             Obx(() => Checkbox(
-              value: _loginController.rememberMe.value,
-              onChanged: (value) => _loginController.rememberMe.value = value ?? false,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(4),
-              ),
-            )),
+                  value: _loginController.rememberMe.value,
+                  onChanged: (value) =>
+                      _loginController.rememberMe.value = value ?? false,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                )),
             const SizedBox(width: 1),
             Text(
               'remember me',
@@ -127,7 +136,6 @@ class LoginPage extends StatelessWidget {
             ),
           ],
         ),
-        
       ],
     );
   }
@@ -153,30 +161,30 @@ class LoginPage extends StatelessWidget {
 
   Widget _buildSignInButton() {
     return Obx(() => SizedBox(
-      width: double.infinity,
-      child: ElevatedButton(
-        onPressed: _loginController.isLoading.value 
-          ? null 
-          : _loginController.login,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.lightBlue[100],
-          foregroundColor: Colors.black87,
-          minimumSize: const Size(double.infinity, 50),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          elevation: 0,
-        ),
-        child: _loginController.isLoading.value
-          ? CircularProgressIndicator(color: Colors.black87)
-          : Text(
-              'Sign In',
-              style: GoogleFonts.poppins(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
+          width: double.infinity,
+          child: ElevatedButton(
+            onPressed: _loginController.isLoading.value
+                ? null
+                : _loginController.login,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.lightBlue[100],
+              foregroundColor: Colors.black87,
+              minimumSize: const Size(double.infinity, 50),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
               ),
+              elevation: 0,
             ),
-      ),
-    ));
+            child: _loginController.isLoading.value
+                ? const CircularProgressIndicator(color: Colors.black87)
+                : Text(
+                    'Sign In',
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+          ),
+        ));
   }
 }

@@ -9,10 +9,10 @@ class SubscriptionDetails extends StatelessWidget {
   final PaymentController controller;
 
   const SubscriptionDetails({
-    Key? key,
+    super.key,
     required this.subscription,
     required this.controller,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -50,10 +50,10 @@ class DetailRow extends StatelessWidget {
   final String value;
 
   const DetailRow({
-    Key? key,
+    super.key,
     required this.label,
     required this.value,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

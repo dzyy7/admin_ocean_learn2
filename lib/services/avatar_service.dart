@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:typed_data';
 
 class AvatarService {
-  static const String baseUrl = 'https://ocean-learn-api.rplrus.com/api/v1';
+  static const String baseUrl = ' https://api.momentumoceanlearn.com/api/v1';
 
   static String getAvatarUrl(String? avatar) {
     if (avatar == null || avatar.isEmpty) return '';

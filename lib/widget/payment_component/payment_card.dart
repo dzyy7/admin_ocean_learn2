@@ -22,12 +22,12 @@ class PaymentCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: pureWhite,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
             color: secondaryColor,
             spreadRadius: 2,
             blurRadius: 6,
-            offset: const Offset(0, 3),
+            offset: Offset(0, 3),
           ),
         ],
       ),

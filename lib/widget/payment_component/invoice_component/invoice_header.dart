@@ -7,9 +7,9 @@ class InvoiceHeader extends StatelessWidget {
   final SubscriptionModel subscription;
 
   const InvoiceHeader({
-    Key? key,
+    super.key,
     required this.subscription,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

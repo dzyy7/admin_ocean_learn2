@@ -8,8 +8,7 @@ import 'package:file_picker/file_picker.dart';
 class AddCourseScreen extends StatefulWidget {
   final CourseService courseService;
 
-  const AddCourseScreen({Key? key, required this.courseService})
-      : super(key: key);
+  const AddCourseScreen({super.key, required this.courseService});
 
   @override
   _AddCourseScreenState createState() => _AddCourseScreenState();
@@ -60,7 +59,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
+            colorScheme: const ColorScheme.light(
               primary: primaryColor,
               onPrimary: Colors.white,
               surface: Colors.white,
@@ -80,7 +79,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
         builder: (context, child) {
           return Theme(
             data: Theme.of(context).copyWith(
-              colorScheme: ColorScheme.light(
+              colorScheme: const ColorScheme.light(
                 primary: primaryColor,
               ),
             ),
@@ -354,7 +353,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                                           decoration: BoxDecoration(
                                             borderRadius:
                                                 BorderRadius.circular(20),
-                                            gradient: LinearGradient(
+                                            gradient: const LinearGradient(
                                               begin: Alignment.topLeft,
                                               end: Alignment.bottomRight,
                                               colors: [
@@ -369,11 +368,11 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                                               Container(
                                                 padding:
                                                     const EdgeInsets.all(16),
-                                                decoration: BoxDecoration(
+                                                decoration: const BoxDecoration(
                                                   color: primaryColor,
                                                   shape: BoxShape.circle,
                                                 ),
-                                                child: Icon(
+                                                child: const Icon(
                                                   Icons.calendar_today_outlined,
                                                   color: pureWhite,
                                                   size: 32,
@@ -460,9 +459,9 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                               }
                             },
                       label: _isLoading
-                          ? Row(
+                          ? const Row(
                               mainAxisSize: MainAxisSize.min,
-                              children: const [
+                              children: [
                                 SizedBox(
                                   width: 20,
                                   height: 20,

@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
 class CourseService {
-  static const String baseUrl = 'https://ocean-learn-api.rplrus.com/api/v1/admin';
+  static const String baseUrl = 'https://api.momentumoceanlearn.com/api/v1/admin';
   List<CourseModel> _courses = [];
 
   String? getToken() {
