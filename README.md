@@ -38,6 +38,7 @@ The app integrates with the Ocean Learn backend via RESTful APIs.
 ---
 
 ## 📁 Project Structure
+```
 admin_ocean_learn2/
 ├── lib/
 │ ├── controllers/ # Business logic using GetX
@@ -56,7 +57,7 @@ admin_ocean_learn2/
 ├── android/ # Android-specific configuration
 ├── ios/ # iOS-specific configuration
 └── build/ # Generated build output (excluded from Git)
-
+```
 ---
 
 ## ⚙️ Key Features
