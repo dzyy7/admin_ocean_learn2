@@ -36,7 +36,7 @@ class SubscriptionService {
         Uri.parse('$baseUrl/admin/subscription/index'),
         headers: _getAuthHeaders(),
       );
-      
+                                                                    
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
         return data.map((json) => SubscriptionModel.fromJson(json)).toList();
