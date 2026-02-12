@@ -126,7 +126,7 @@ class PaymentDashboard extends StatelessWidget {
   // Get completed payments count for selected month
   int _getCompletedPaymentsForSelectedMonth() {
     final monthlySubscriptions = controller.getSubscriptionsForSelectedMonth();
-    return monthlySubscriptions.where((s) => s.status == 'Paid').length;
+    return monthlySubscriptions.where((s) => s.status == 'Confirmed').length;
   }
 
   // Get rejected payments count for selected month
